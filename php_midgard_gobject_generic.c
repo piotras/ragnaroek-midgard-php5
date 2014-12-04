@@ -903,7 +903,7 @@ zend_object_value php_midgard_gobject_new(zend_class_entry *class_type TSRMLS_DC
 	
 	object_properties_init(&(php_gobject->zo), class_type);
 #else
-	zval *tmp
+	zval *tmp;
 	zend_hash_copy(php_gobject->zo.properties, 
 			&class_type->default_properties, 
 			(copy_ctor_func_t) zval_add_ref,
