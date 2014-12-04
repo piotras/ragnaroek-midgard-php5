@@ -1,0 +1,52 @@
+
+1 - To install midgard php4-module, you'll first need to have the version 
+4.3 or later of PHP, as well as the matching php-devel package (or install 
+PHP from source). 
+Make sure midgard-config are in your PATH, and that regular PHP pages work.
+
+
+2 - Then run:
+
+./mkall 
+
+	* midgard-config is not in system's PATH
+	Use --with-midgard-config argument , full path including 
+	midgard-config executable is required in such case
+
+	./mkall --with-midgard-config=/usr/local/bin/midgard-config
+
+	* PHP4 and PHP5 installed
+	Use --with-php-config argument, full path including 
+	php-config executable is required
+
+	./mkall --with-php-config=/usr/bin/php-config4
+
+On debian sarge or sid you shouldn't use mkall script if both PHP4 and PHP5
+are installed. To compile against PHP5 you should use phpize and configure scripts.
+
+	phpize5
+	./configure --wit-php-config=/usr/bin/php-config5
+	make
+
+3 - Edit your php.ini to add:
+
+extension=midgard.so
+
+and make sure that extension_dir at least contains the output of
+'php-config --extension-dir'
+
+4 - Stop and start httpd.
+
+You may stop and start httpd server when midgard-data is already configured and 
+installed.
+
+It is required for midgard to have php4 installed with native mysql
+and xml support. This is usually done with
+configure --with-mysql=<path-to-mysql> --with-xml=<path-to-expat>
+
+If mysql or expat cannot be found php4 uses built-in support for
+these. This will _not_ work with Midgard, or indeed any extension that
+uses the installed version of these libraries instead of the versions
+bundled with php4. If you want to use mysql and/or expat functionality
+in PHP you _have to_ make sure that php uses the external, not the
+internal, libraries.

@@ -1,0 +1,57 @@
+To enable the session management:
+
+- create the session table in Midgard DB:
+$ mysql -u <rootuser> -p <midgarddatabase> < session.sql
+
+, replacing <rootuser> with the username of your mysql rootuser, and
+<midgarddatabase> with the name of your midgard database. (Usually midgard).
+
+The creation of the session table has to be done as the rootuser, or any other user with the rights to create table in the midgard DB. The midgard user does not have these rights for security reasons.
+
+- add session.c in the Makefile.in to the LTLIBRARY_SOURCES:
+LTLIBRARY_SOURCES     = mgd_errno.c midgard.c article.c \
+                        parameter.c attachment.c oop.c \
+                        topic.c element.c mail.c \
+                        group.c file.c host.c image.c member.c \
+                        calendar.c event.c eventmember.c page.c \
+                        pageelement.c pagelink.c person.c \
+                        preferences.c snippet.c \
+                        snippetdir.c style.c sitegroup.c \
+                        preparser-parser.c preparser-scanner.c \
+                        preparser.c session.c
+
+
+- copy config.m4.session over config.m4
+
+- copy session.modules.c over ext/session/modules.c
+
+Then you have to compile PHP4 with Midgard:
+cd ../../         # cd to top directory of PHP sources
+$ ./buildconf
+$ ./configure --with-apxs --with-midgard[=/path/to/midgard] --enable-mgd-session --with-whatever-options
+$ make
+# make install
+
+Then edit your php.ini:
+session.save_handler = midgard
+session.auto_start   = 0
+
+Restart apache.
+
+To test it, insert in a Midgard page the following code:
+------------------8<----------------------------------
+<?php
+session_register ("count");
+$count++;
+?>
+
+Hello visitor, you have seen this page &(count); times.<p>
+
+<php?
+# the <?=SID?> is necessary to preserve the session id
+# in the case that the user has disabled cookies
+?>
+
+To continue, <A HREF="&(midgard.uri);?<?=SID?>">click here</A>
+------------------8<----------------------------------
+

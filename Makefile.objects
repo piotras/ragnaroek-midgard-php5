@@ -1,0 +1,86 @@
+midgard.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/midgard.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/midgard.c -o midgard.lo 
+preparser.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/preparser.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/preparser.c -o preparser.lo 
+preparse.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/preparse.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/preparse.c -o preparse.lo 
+query_builder.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/query_builder.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/query_builder.c -o query_builder.lo 
+php_midgard_reflection_property.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_reflection_property.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_reflection_property.c -o php_midgard_reflection_property.lo 
+php_midgard_collector.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_collector.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_collector.c -o php_midgard_collector.lo 
+php_midgard_object_parameter.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_object_parameter.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_object_parameter.c -o php_midgard_object_parameter.lo 
+php_midgard_object_attachment.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_object_attachment.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_object_attachment.c -o php_midgard_object_attachment.lo 
+php_midgard_config.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_config.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_config.c -o php_midgard_config.lo 
+php_midgard_gobject_generic.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_gobject_generic.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_gobject_generic.c -o php_midgard_gobject_generic.lo 
+php_midgard_blob.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_blob.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_blob.c -o php_midgard_blob.lo 
+php_midgard_object.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_object.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_object.c -o php_midgard_object.lo 
+php_midgard_object_class.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_object_class.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_object_class.c -o php_midgard_object_class.lo 
+php_midgard_connection.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_connection.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_connection.c -o php_midgard_connection.lo 
+article.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/article.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/article.c -o article.lo 
+parameter.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/parameter.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/parameter.c -o parameter.lo 
+attachment.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/attachment.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/attachment.c -o attachment.lo 
+oop.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/oop.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/oop.c -o oop.lo 
+topic.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/topic.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/topic.c -o topic.lo 
+element.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/element.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/element.c -o element.lo 
+group.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/group.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/group.c -o group.lo 
+host.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/host.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/host.c -o host.lo 
+member.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/member.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/member.c -o member.lo 
+calendar.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/calendar.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/calendar.c -o calendar.lo 
+event.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/event.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/event.c -o event.lo 
+eventmember.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/eventmember.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/eventmember.c -o eventmember.lo 
+page.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/page.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/page.c -o page.lo 
+pageelement.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/pageelement.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/pageelement.c -o pageelement.lo 
+pagelink.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/pagelink.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/pagelink.c -o pagelink.lo 
+person.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/person.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/person.c -o person.lo 
+snippet.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/snippet.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/snippet.c -o snippet.lo 
+snippetdir.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/snippetdir.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/snippetdir.c -o snippetdir.lo 
+style.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/style.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/style.c -o style.lo 
+sitegroup.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/sitegroup.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/sitegroup.c -o sitegroup.lo 
+language.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/language.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/language.c -o language.lo 
+quota.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/quota.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/quota.c -o quota.lo 
+php_midgard_replicator.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_replicator.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_replicator.c -o php_midgard_replicator.lo 
+php_midgard_user.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_user.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_user.c -o php_midgard_user.lo 
+php_midgard_dbus.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_dbus.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_dbus.c -o php_midgard_dbus.lo 
+php_midgard_sitegroup.lo: /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_sitegroup.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/pp/svn/ragnaroek/midgard/apis/php5 $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/pp/svn/ragnaroek/midgard/apis/php5/php_midgard_sitegroup.c -o php_midgard_sitegroup.lo 
+$(phplibdir)/midgard.la: ./midgard.la
+	$(LIBTOOL) --mode=install cp ./midgard.la $(phplibdir)
+
+./midgard.la: $(shared_objects_midgard) $(MIDGARD_SHARED_DEPENDENCIES)
+	$(LIBTOOL) --mode=link $(CC) $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS) $(LDFLAGS) -o $@ -export-dynamic -avoid-version -prefer-pic -module -rpath $(phplibdir) $(EXTRA_LDFLAGS) $(shared_objects_midgard) $(MIDGARD_SHARED_LIBADD)
+

@@ -1,0 +1,135 @@
+dnl $Id: config.m4-php4.3 7001 2003-05-27 11:02:18Z sergei $
+
+dnl  Copyright (C) 1999 Jukka Zitting <jukka.zitting@iki.fi>
+dnl  Copyright (C) 2000 The Midgard Project ry
+dnl  Copyright (C) 2000 Emile Heyns, Aurora SA <emile@iris-advies.com>
+dnl 
+dnl  This program is free software; you can redistribute it and/or modify it
+dnl  under the terms of the GNU Lesser General Public License as published
+dnl  by the Free Software Foundation; either version 2 of the License, or
+dnl  (at your option) any later version.
+dnl 
+dnl  This program is distributed in the hope that it will be useful,
+dnl  but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl  GNU General Public License for more details.
+dnl 
+dnl  You should have received a copy of the GNU General Public License
+dnl  along with this program; if not, write to the Free Software
+dnl  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+AC_PROG_YACC
+AC_DECL_YYTEXT
+AC_PROG_LEX
+
+PHP_ARG_WITH(midgard, for midgard support,
+[  --with-midgard{=/path/to/midgard-config} Include Midgard support])
+
+if test "$PHP_MIDGARD" != "no"; then
+  if test "$PHP_MIDGARD" != "yes"; then
+    MIDGARDCONFIG=$PHP_MIDGARD
+  else
+    AC_PATH_PROG(MIDGARDCONFIG, midgard-config)
+  fi
+  if test "$MIDGARDCONFIG" = "" ; then
+    AC_MSG_ERROR(midgard-config not found. Did you install midgard-lib?)
+  fi
+  if test ! -x $MIDGARDCONFIG || test ! -f $MIDGARDCONFIG; then
+    AC_MSG_ERROR([midgard-config ($MIDGARDCONFIG) not executable. Please specify the full path, including the scriptname])
+  fi
+
+  dnl [EEH] TODO: Add checks for apache-static compilation
+  dnl [EEH] no re-test if PHP configure did the work for us
+  if test "$APXS" = "" ; then
+   AC_PATH_PROG(APXS, apxs)
+  fi
+  if test "$APXS" = "" || test ! -f $APXS || test ! -x $APXS ; then
+   AC_MSG_ERROR(apxs not found or not executable)
+  fi
+  APACHE_INCLUDES=`$APXS -q INCLUDEDIR`
+  PHP_ADD_INCLUDE($APACHE_INCLUDES)
+  
+  AC_MSG_CHECKING([whether to compile with Apache 2])
+  AC_ARG_WITH(apxs2, [  --with-apxs2          Configure for Apache 2 (apxs should be in your PATH)], PHP_MIDGARD_APXS2=[$]withval, PHP_MIDGARD_APXS2="no")
+  AC_MSG_RESULT($PHP_MIDGARD_APXS2)
+  if test "$PHP_MIDGARD_APXS2" != "no"; then
+    AC_DEFINE(MIDGARD_APXS2, 1, [ ])
+  fi
+  
+  PHP_EVAL_INCLINE(`$MIDGARDCONFIG --cppflags`)
+  PHP_EVAL_LIBLINE(`$MIDGARDCONFIG --libs`, MIDGARD_SHARED_LIBADD)
+  LFLAGS="$LFLAGS -Pmgd -olex.yy.c"
+  
+  PHP_SUBST(MIDGARDCONFIG)
+
+  PHP_SUBST(MIDGARD_SHARED_LIBADD)
+
+  AC_MSG_CHECKING([whether to compile for old mod_midgard (non-MMP, activated by default)])
+  AC_ARG_WITH(old-mod-midgard, [  --with-old-mod-midgard          Configure for old (1.4.2) mod-midgard], PHP_MIDGARD_OLDMOD=[$]withval, PHP_MIDGARD_OLDMOD="yes")
+  AC_MSG_RESULT($PHP_MIDGARD_OLDMOD)
+  if test "$PHP_MIDGARD_OLDMOD" != "no"; then
+    AC_DEFINE(MIDGARD_142MOD, 1, [ ])
+  fi
+
+  AC_MSG_CHECKING([whether to keep depracated features])
+  AC_ARG_ENABLE(mgd-depracated, 
+  [  --enable-mgd-depracated         Keep depracated features], PHP_MIDGARD_KEEP_DEPRACATED=[$]enableval, PHP_MIDGARD_KEEP_DEPRACATED="no")
+  echo "$PHP_MIDGARD_KEEP_DEPRACATED";
+  if test "$PHP_MIDGARD_KEEP_DEPRACATED" != "no"; then
+    AC_DEFINE(MIDGARD_KEEP_DEPRACATED, 1, [ ])
+  fi
+
+  AC_MSG_CHECKING(for midgard experimental functions support)
+  AC_ARG_ENABLE(mgd-experimental, 
+  [  --enable-mgd-experimental          Enable experimental functions support], PHP_MIDGARD_EXPERIMENTAL=[$]enableval, PHP_MIDGARD_EXPERIMENTAL="no")
+  echo "$PHP_MIDGARD_EXPERIMENTAL";
+  if test "$PHP_MIDGARD_EXPERIMENTAL" != "no"; then
+    AC_DEFINE(YOU_WANT_TO_TEST, 1, [ ])
+  fi
+  
+#if MIDGARD_PHP4_EXTENSIVE_LOGGING
+  AC_MSG_CHECKING(whether to include profiling calls)
+  AC_ARG_WITH(mgd-verbose-logging, [  --with-mgd-verbose-logging Add verbose log tracing], PHP_MIDGARD_EXTENSIVE_LOGGING=[$]withval, PHP_MIDGARD_EXTENSIVE_LOGGING="no")
+  AC_MSG_RESULT($PHP_MIDGARD_EXTENSIVE_LOGGING)
+  if test "$PHP_MIDGARD_EXTENSIVE_LOGGING" != "no"; then
+    AC_DEFINE(MIDGARD_PHP4_EXTENSIVE_LOGGING, 1, [ ])
+  fi
+
+  if test "$php_always_shared" = "yes"; then
+    AC_DEFINE(MGD_INCLUDE_PHP_CONFIG, 1, [ ])
+  fi
+  AC_DEFINE(HAVE_MIDGARD, 1, [ ])
+  PHP_NEW_EXTENSION(midgard, mgd_errno.c midgard.c article.c parameter.c attachment.c oop.c topic.c element.c mail.c group.c file.c host.c image.c member.c calendar.c event.c eventmember.c page.c pageelement.c pagelink.c person.c preferences.c snippet.c snippetdir.c style.c sitegroup.c preparser.c preparse.c, $ext_shared)
+
+  dnl [eeh] Trust whatever phpize gave us... it doesn't qualify the
+  dnl %$^!@ filename
+  if test "$PHP_CONFIG" = "" ; then
+    AC_PATH_PROG(PHP_CONFIG, php-config)
+    if test "$PHP_CONFIG" != "" ; then
+      if test ! -f $PHP_CONFIG || test ! -x $PHP_CONFIG ; then
+        PHP_CONFIG=
+      fi
+    fi
+  fi
+  if test "$PHP_CONFIG" ; then
+    PHPEXTDIR=`$PHP_CONFIG --extension-dir`
+    cat<<EOMSG
+  ========================   IMPORTANT   =========================
+  If this is the first time you're installing Midgard, or you have
+  recently upgraded PHP, make sure to check your php.ini to verify
+  that extension_dir at least includes
+  $PHPEXTDIR
+  ================================================================
+EOMSG
+  else
+    cat<<EOMSG
+  ========================   IMPORTANT   =========================
+  I can't find php-config. I'll assume you are compiling Midgard
+  as a static PHP4 extension.
+  ================================================================
+EOMSG
+  fi
+   dnl Sorry, but otherwise the above message scrolls out immediately
+   sleep 4
+
+fi
