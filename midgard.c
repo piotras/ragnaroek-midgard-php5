@@ -645,8 +645,16 @@ static zend_bool create_global_zval(const char *name, uint name_len TSRMLS_DC)
 {
 	zval *globals;
 	ALLOC_ZVAL(globals);
-	Z_SET_REFCOUNT_P(globals, 1);
-	Z_SET_ISREF_P(globals);
+	zend_hash_update(&EG(symbol_table), name, name_len + 1, &globals, sizeof(zval *), NULL);
+	return 0;
+}
+
+static zend_bool create_global_array(const char *name, uint name_len TSRMLS_DC)
+{
+	zval *globals;
+	ALLOC_ZVAL(globals);
+	array_init(globals);
+	INIT_PZVAL(globals);
 	zend_hash_update(&EG(symbol_table), name, name_len + 1, &globals, sizeof(zval *), NULL);
 	return 0;
 }
@@ -658,9 +666,9 @@ void php_midgard_register_auto_globals(void)
 	zend_register_auto_global(MIDGARD_GLOBAL_MIDCOM, sizeof(MIDGARD_GLOBAL_MIDCOM)-1, 0, create_global_zval TSRMLS_CC);
 	zend_register_auto_global(MIDGARD_GLOBAL_MIDGARD_CONNECTION, sizeof(MIDGARD_GLOBAL_MIDGARD_CONNECTION)-1, 0, create_global_zval TSRMLS_CC);
 #else
-	zend_register_auto_global(MIDGARD_GLOBAL_MIDGARD, sizeof(MIDGARD_GLOBAL_MIDGARD)-1, NULL TSRMLS_CC);
-	zend_register_auto_global(MIDGARD_GLOBAL_MIDCOM, sizeof(MIDGARD_GLOBAL_MIDCOM)-1, NULL TSRMLS_CC);
-	zend_register_auto_global(MIDGARD_GLOBAL_MIDGARD_CONNECTION, sizeof(MIDGARD_GLOBAL_MIDGARD_CONNECTION)-1, NULL TSRMLS_CC);
+	zend_register_auto_global(MIDGARD_GLOBAL_MIDGARD, sizeof(MIDGARD_GLOBAL_MIDGARD)-1, (zend_auto_global_callback)create_global_array TSRMLS_CC);
+	zend_register_auto_global(MIDGARD_GLOBAL_MIDCOM, sizeof(MIDGARD_GLOBAL_MIDCOM)-1, (zend_auto_global_callback)create_global_array TSRMLS_CC);
+	zend_register_auto_global(MIDGARD_GLOBAL_MIDGARD_CONNECTION, sizeof(MIDGARD_GLOBAL_MIDGARD_CONNECTION)-1, (zend_auto_global_callback)create_global_zval TSRMLS_CC);
 #endif
 	return;
 }
