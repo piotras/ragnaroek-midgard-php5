@@ -641,6 +641,30 @@ static void _midgard_list_fetch_dtor(zend_rsrc_list_entry * rsrc TSRMLS_DC)
     }
 }
 
+static zend_bool create_global_zval(const char *name, uint name_len TSRMLS_DC)
+{
+	zval *globals;
+	ALLOC_ZVAL(globals);
+	Z_SET_REFCOUNT_P(globals, 1);
+	Z_SET_ISREF_P(globals);
+	zend_hash_update(&EG(symbol_table), name, name_len + 1, &globals, sizeof(zval *), NULL);
+	return 0;
+}
+
+void php_midgard_register_auto_globals(void)
+{
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
+	zend_register_auto_global(MIDGARD_GLOBAL_MIDGARD, sizeof(MIDGARD_GLOBAL_MIDGARD)-1, 0, create_global_zval TSRMLS_CC);
+	zend_register_auto_global(MIDGARD_GLOBAL_MIDCOM, sizeof(MIDGARD_GLOBAL_MIDCOM)-1, 0, create_global_zval TSRMLS_CC);
+	zend_register_auto_global(MIDGARD_GLOBAL_MIDGARD_CONNECTION, sizeof(MIDGARD_GLOBAL_MIDGARD_CONNECTION)-1, 0, create_global_zval TSRMLS_CC);
+#else
+	zend_register_auto_global(MIDGARD_GLOBAL_MIDGARD, sizeof(MIDGARD_GLOBAL_MIDGARD)-1, NULL TSRMLS_CC);
+	zend_register_auto_global(MIDGARD_GLOBAL_MIDCOM, sizeof(MIDGARD_GLOBAL_MIDCOM)-1, NULL TSRMLS_CC);
+	zend_register_auto_global(MIDGARD_GLOBAL_MIDGARD_CONNECTION, sizeof(MIDGARD_GLOBAL_MIDGARD_CONNECTION)-1, NULL TSRMLS_CC);
+#endif
+	return;
+}
+
 PHP_MINIT_FUNCTION(midgard)
 {
 	/* Return success if there's module midgard already loaded.
@@ -662,9 +686,7 @@ PHP_MINIT_FUNCTION(midgard)
 	MidgardClassPtr *midgard_class;
 	
 	ZEND_INIT_MODULE_GLOBALS(midgard, php_midgard_init_globals, NULL);
-	php_midgard_register_auto_global("_MIDGARD");
-	php_midgard_register_auto_global("_MIDCOM");
-	php_midgard_register_auto_global("_MIDGARD_CONNECTION");
+	php_midgard_register_auto_globals();
 	
 	/* EEH: I have 0 clue as to what these params mean, and the PHP
 	 * docs on these are non-existant

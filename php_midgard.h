@@ -78,12 +78,9 @@ extern guint global_loghandler;
 # define php_midgard_function_entry function_entry
 #endif
 
-#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
-#define php_midgard_register_auto_global(name) zend_register_auto_global(#name, sizeof(#name)-1, 0, NULL TSRMLS_CC);
-#else
-#define php_midgard_register_auto_global(name) zend_register_auto_global(#name, sizeof(#name)-1, NULL TSRMLS_CC);
-#endif
-
+#define MIDGARD_GLOBAL_MIDGARD			"_MIDGARD"
+#define MIDGARD_GLOBAL_MIDCOM			"_MIDCOM"
+#define MIDGARD_GLOBAL_MIDGARD_CONNECTION	"_MIDGARD_CONNECTION"
 
 /* LEGACY WORKAROUNDS */
 midgard_request_config *mgd_rcfg();
@@ -100,6 +97,7 @@ int is_table_multilang(const char *table);
 void mgd_php_store_elt (const char *name, const char *value, void *userdata);
 
 extern zend_module_entry midgard_module_entry;
+extern void php_midgard_register_auto_globals(void); 
 
 # ifdef ZTS
 typedef struct {
