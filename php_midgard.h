@@ -278,6 +278,7 @@ extern void php_midgard_error_exception_force_throw(midgard *mgd, gint errcode);
 zend_class_entry *php_midgard_get_baseclass_ptr(zend_class_entry *ce);
 zend_class_entry *php_midgard_get_baseclass_ptr_by_name(const gchar *name);
 
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3 
 #define CHECK_MGD \
 	if (!mgd_handle()) \
 		php_error(E_ERROR, "Can not find MidgardConnection"); \
@@ -287,6 +288,18 @@ zend_class_entry *php_midgard_get_baseclass_ptr_by_name(const gchar *name);
 	g_log("midgard-core", G_LOG_LEVEL_INFO, \
 		" %s%s%s(...)", _check_class_name, _check_cname_space, \
 		get_active_function_name(TSRMLS_C));
+#else
+#define CHECK_MGD \
+	if (!mgd_handle()) \
+		php_error(E_ERROR, "Can not find MidgardConnection"); \
+	mgd_reset_errno(); \
+	char *_check_cname_space = NULL; \
+	const char *_check_class_name = get_active_class_name(&_check_cname_space TSRMLS_CC); \
+	g_log("midgard-core", G_LOG_LEVEL_INFO, \
+		" %s%s%s(...)", _check_class_name, _check_cname_space, \
+		get_active_function_name(TSRMLS_C));
+#endif
+
 
 #endif	/* PHP_MIDGARD_H */
 
