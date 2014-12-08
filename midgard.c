@@ -662,13 +662,13 @@ static zend_bool create_global_array(const char *name, uint name_len TSRMLS_DC)
 void php_midgard_register_auto_globals(void)
 {
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
-	zend_register_auto_global(MIDGARD_GLOBAL_MIDGARD, sizeof(MIDGARD_GLOBAL_MIDGARD)-1, 0, create_global_zval TSRMLS_CC);
+	zend_register_auto_global(MIDGARD_GLOBAL_MIDGARD, sizeof(MIDGARD_GLOBAL_MIDGARD)-1, 0, NULL TSRMLS_CC);
 	zend_register_auto_global(MIDGARD_GLOBAL_MIDCOM, sizeof(MIDGARD_GLOBAL_MIDCOM)-1, 0, create_global_zval TSRMLS_CC);
-	zend_register_auto_global(MIDGARD_GLOBAL_MIDGARD_CONNECTION, sizeof(MIDGARD_GLOBAL_MIDGARD_CONNECTION)-1, 0, create_global_zval TSRMLS_CC);
+	zend_register_auto_global(MIDGARD_GLOBAL_MIDGARD_CONNECTION, sizeof(MIDGARD_GLOBAL_MIDGARD_CONNECTION)-1, 0, NULL TSRMLS_CC);
 #else
-	zend_register_auto_global(MIDGARD_GLOBAL_MIDGARD, sizeof(MIDGARD_GLOBAL_MIDGARD)-1, (zend_auto_global_callback)create_global_array TSRMLS_CC);
+	zend_register_auto_global(MIDGARD_GLOBAL_MIDGARD, sizeof(MIDGARD_GLOBAL_MIDGARD)-1, NULL TSRMLS_CC);
 	zend_register_auto_global(MIDGARD_GLOBAL_MIDCOM, sizeof(MIDGARD_GLOBAL_MIDCOM)-1, (zend_auto_global_callback)create_global_array TSRMLS_CC);
-	zend_register_auto_global(MIDGARD_GLOBAL_MIDGARD_CONNECTION, sizeof(MIDGARD_GLOBAL_MIDGARD_CONNECTION)-1, (zend_auto_global_callback)create_global_zval TSRMLS_CC);
+	zend_register_auto_global(MIDGARD_GLOBAL_MIDGARD_CONNECTION, sizeof(MIDGARD_GLOBAL_MIDGARD_CONNECTION)-1, NULL TSRMLS_CC);
 #endif
 	return;
 }
@@ -1726,15 +1726,13 @@ void _make_midgard_global()
 		add_assoc_stringl(mgd_php_globals, "prefix", rcfg->uri, rcfg->prelen, 1);
 		add_assoc_stringl(mgd_php_globals, "self", rcfg->uri, rcfg->self_len, 1);
 	}
-	
+
 	add_assoc_long(mgd_php_globals, "user", mgd_user(mgd));
 	add_assoc_long(mgd_php_globals, "admin", mgd_isadmin(mgd));
-
 	add_assoc_long(mgd_php_globals, "lang", mgd_lang(mgd));
-
 	add_assoc_long(mgd_php_globals, "root", mgd_isroot(mgd));
 	add_assoc_long(mgd_php_globals, "sitegroup", mgd_sitegroup(mgd));
-    
+
 	/* PP: Add midgard-config values ( prefix, multilang, quota) */
 	MAKE_STD_ZVAL(confv);
 	array_init(confv);
@@ -1764,8 +1762,8 @@ void _make_midgard_global()
 	_make_schema_types(schema_array);
 	add_assoc_zval(mgd_php_globals, "schema", schema_array);
 	
-	zend_hash_update(&EG(symbol_table), 
-			"_MIDGARD", sizeof("_MIDGARD"), 
+	zend_hash_add(&EG(symbol_table), 
+			MIDGARD_GLOBAL_MIDGARD, sizeof(MIDGARD_GLOBAL_MIDGARD), 
 			&mgd_php_globals, sizeof(zval *), NULL);  
 }
 
