@@ -663,11 +663,11 @@ void php_midgard_register_auto_globals(void)
 {
 #if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
 	zend_register_auto_global(MIDGARD_GLOBAL_MIDGARD, sizeof(MIDGARD_GLOBAL_MIDGARD)-1, 0, NULL TSRMLS_CC);
-	zend_register_auto_global(MIDGARD_GLOBAL_MIDCOM, sizeof(MIDGARD_GLOBAL_MIDCOM)-1, 0, create_global_zval TSRMLS_CC);
+	zend_register_auto_global(MIDGARD_GLOBAL_MIDCOM, sizeof(MIDGARD_GLOBAL_MIDCOM)-1, 0, NULL TSRMLS_CC);
 	zend_register_auto_global(MIDGARD_GLOBAL_MIDGARD_CONNECTION, sizeof(MIDGARD_GLOBAL_MIDGARD_CONNECTION)-1, 0, NULL TSRMLS_CC);
 #else
 	zend_register_auto_global(MIDGARD_GLOBAL_MIDGARD, sizeof(MIDGARD_GLOBAL_MIDGARD)-1, NULL TSRMLS_CC);
-	zend_register_auto_global(MIDGARD_GLOBAL_MIDCOM, sizeof(MIDGARD_GLOBAL_MIDCOM)-1, (zend_auto_global_callback)create_global_array TSRMLS_CC);
+	zend_register_auto_global(MIDGARD_GLOBAL_MIDCOM, sizeof(MIDGARD_GLOBAL_MIDCOM)-1, NULL TSRMLS_CC);
 	zend_register_auto_global(MIDGARD_GLOBAL_MIDGARD_CONNECTION, sizeof(MIDGARD_GLOBAL_MIDGARD_CONNECTION)-1, NULL TSRMLS_CC);
 #endif
 	return;
