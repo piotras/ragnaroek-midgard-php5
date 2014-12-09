@@ -37,7 +37,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 enum { MGD_BLOB_CALL_FUNC, MGD_BLOB_CALL_SELF, MGD_BLOB_CALL_OTHER };
 
-static long mgd_get_blob_id(zval *self, zval **name, int *calltype)
+static long mgd_get_blob_id(zval *self, zval *name, int *calltype)
 {
 	zval **table, **id;
 	TSRMLS_FETCH();
@@ -51,8 +51,8 @@ static long mgd_get_blob_id(zval *self, zval **name, int *calltype)
    if (self == NULL) {
       if (calltype) *calltype = MGD_BLOB_CALL_FUNC;
       if (name == NULL) return MGD_ERR_INVALID_NAME;
-      convert_to_long_ex(name);
-      return (*name)->value.lval;
+      convert_to_long_ex(&name);
+      return Z_LVAL_P(name);
    }
 
    if (!MGD_PROPFIND(self, "__table__", table)) {
@@ -86,18 +86,18 @@ static long mgd_get_blob_id(zval *self, zval **name, int *calltype)
 
    if (calltype) *calltype = MGD_BLOB_CALL_OTHER;
    if (name == NULL) return MGD_ERR_INVALID_NAME;
-   convert_to_string_ex(name);
+   convert_to_string_ex(&name);
 
    myId = mgd_exists_id(mgd_handle(), "blobs",
 			"ptable=$q AND pid=$d AND name=$q AND lang=$d",
 			(*table)->value.str.val, (*id)->value.lval,
-			(*name)->value.str.val, lang);
+			Z_LVAL_P(name), lang);
    if (myId) {
      return myId;
    } else {
      return mgd_exists_id(mgd_handle(), "blobs", "ptable=$q AND pid=$d AND name=$q AND lang=$d",
 			  (*table)->value.str.val, (*id)->value.lval,
-			  (*name)->value.str.val), mgd_get_default_lang(mgd_handle());
+			  Z_LVAL_P(name)), mgd_get_default_lang(mgd_handle());
    }
 
 }
@@ -106,7 +106,7 @@ MGD_FUNCTION(int, oop_attachment_create, (string name, string title, string mime
 {
 	zval *self;
 	zval **zv_table, **zv_id;
-	zval **zv_name, **zv_title, **zv_mimetype, **zv_score, **sitegroup_property;
+	zval *zv_name, *zv_title, *zv_mimetype, *zv_score, **sitegroup_property;
 	int id = 0, current_sitegroup;
 	int table;
 	int score;
@@ -167,34 +167,33 @@ MGD_FUNCTION(int, oop_attachment_create, (string name, string title, string mime
 			    != SUCCESS) {
 				WRONG_PARAM_COUNT;
 			}
-			convert_to_long_ex(zv_score);
-			score = (*zv_score)->value.lval;
+			convert_to_long_ex(&zv_score);
+			score = Z_LVAL_P(zv_score);
 			break;
 		default:
 			WRONG_PARAM_COUNT;
 	}
 
-	convert_to_string_ex(zv_name);
-	convert_to_string_ex(zv_title);
-	convert_to_string_ex(zv_mimetype);
+	convert_to_string_ex(&zv_name);
+	convert_to_string_ex(&zv_title);
+	convert_to_string_ex(&zv_mimetype);
 
 
 	if (mgd_exists_id
 	    (mgd_handle(), "blobs", "ptable=$q AND pid=$d AND name=$q AND lang=$d",
-	     (*zv_table)->value.str.val, (*zv_id)->value.lval,
-	     (*zv_name)->value.str.
-	     val, lang
+	     Z_STRVAL_PP(zv_table), Z_LVAL_PP(zv_id),
+	     Z_STRVAL_P(zv_name), lang
 	     ))  {
         RETURN_FALSE_BECAUSE(MGD_ERR_DUPLICATE);
     }
 
-    id = (*zv_id)->value.lval;    
+    id = Z_LVAL_PP(zv_id);    
 
     /* Switch to anonymous mode for MgdSchema objects */
     MGD_PHP_PCLASS_NAME;
     if (g_hash_table_lookup(mgd_handle()->schema->types, ce->name) == NULL) {
 
-        table = mgd_lookup_table_id((*zv_table)->value.str.val);
+        table = mgd_lookup_table_id(Z_STRVAL_PP(zv_table));
        
 	    if (!isglobalowner(table, id)) {
 		    RETURN_FALSE_BECAUSE(MGD_ERR_ACCESS_DENIED);
@@ -204,7 +203,7 @@ MGD_FUNCTION(int, oop_attachment_create, (string name, string title, string mime
     do {
 		strcpy(location + 4,
 		       mgd_create_guid(mgd_handle(),
-				       (*zv_table)->value.str.val, id));
+				       Z_STRVAL_PP(zv_table), id));
 	} while (strstr(location + 4, ".."));
 
 	/* some basic hashing to aid in dirsize balancing. This probably
@@ -250,23 +249,22 @@ MGD_FUNCTION(int, oop_attachment_create, (string name, string title, string mime
 		php_midgard_create(return_value, NULL, "blobs",
 				   "ptable,pid,name,title,location,mimetype,author,created,score,lang",
 				   "$q,$d,$q,$q,$q,$q,$d,Now(),$d,$d",
-				   (*zv_table)->value.str.val, id,
-				   (*zv_name)->value.str.val,
-				   (*zv_title)->value.str.val, location,
-				   (*zv_mimetype)->value.str.val,
+				   Z_STRVAL_PP(zv_table), id,
+				   Z_STRVAL_P(zv_name),
+				   Z_STRVAL_P(zv_title), location,
+				   Z_STRVAL_P(zv_mimetype),
 				   mgd_user(mgd_handle()), score, lang);
 
 		gobj = midgard_object_new(mgd_handle(), 
 				"midgard_attachment", NULL);
-		if(midgard_object_get_by_id(gobj, 
-					(guint) return_value->value.lval)) {
+		if(midgard_object_get_by_id(gobj, (guint) Z_LVAL_P(return_value))) {
 			midgard_quota_update(gobj);
 			g_object_unref(gobj);
 		} else {
-			g_warning("Failed to update attachment quota. ID:%d", (int)return_value->value.lval);
+			g_warning("Failed to update attachment quota. ID:%d", (int)Z_LVAL_P(return_value));
 		}
 			
-		PHP_CREATE_REPLIGARD("blobs", return_value->value.lval);
+		PHP_CREATE_REPLIGARD("blobs", Z_LVAL_P(return_value));
 		_MGD_SITEGROUP_FORCE_REVERT();
 	}
 
@@ -275,7 +273,7 @@ MGD_FUNCTION(int, oop_attachment_create, (string name, string title, string mime
 
 MGD_FUNCTION(mixed, oop_attachment_list, ([string sort]))
 {
-	zval *self, **zv_table, **zv_id, **zv_order;
+	zval *self, **zv_table, **zv_id, *zv_order;
 	char *order = NULL;
 	zval **zv_lang;
 	zend_class_entry *ce;
@@ -315,14 +313,14 @@ MGD_FUNCTION(mixed, oop_attachment_list, ([string sort]))
 			WRONG_PARAM_COUNT;
 		}
 		else {
-			convert_to_string_ex(zv_order);
-			order = (*zv_order)->value.str.val;
+			convert_to_string_ex(&zv_order);
+			order = Z_STRVAL_P(zv_order);
 		}
 	}
 	php_midgard_select(&MidgardAttachment, return_value,
 			   "id,name,title,mimetype,score,author,created" SITEGROUP_SELECT,
 			   "blobs", "ptable=$q AND pid=$d", order,
-			   (*zv_table)->value.str.val, (*zv_id)->value.lval);
+			   Z_STRVAL_PP(zv_table), Z_LVAL_PP(zv_id));
 }
 
 MGD_FUNCTION(int, open_attachment, ([int id, [string mode]]))
@@ -337,7 +335,7 @@ MGD_FUNCTION(int, open_attachment, ([int id, [string mode]]))
 	midgard_pool *pool;
 	midgard_res *res, *qres;
 	const char *blobdir;
-	zval **zv_id, **zv_mode;
+	zval *zv_id, *zv_mode;
     zval *self;
     long aid;
     zend_class_entry *ce;
@@ -390,7 +388,7 @@ MGD_FUNCTION(int, open_attachment, ([int id, [string mode]]))
    else if (aid < 0) { RETURN_FALSE_BECAUSE(aid); }
 
    if(zv_mode)
-       convert_to_string_ex(zv_mode);
+       convert_to_string_ex(&zv_mode);
 
 	res = mgd_sitegroup_record(mgd_handle(), "ptable,pid,location",
 				   "blobs", aid);
@@ -425,7 +423,7 @@ MGD_FUNCTION(int, open_attachment, ([int id, [string mode]]))
         /* Check access permissions: Write-Access requires ownership, */
 	    /* Read access is allowed by default */
     	if (zv_mode)
-	    	if (strcmp((*zv_mode)->value.str.val, "r") != 0
+	    	if (strcmp(Z_STRVAL_P(zv_mode), "r") != 0
 	        	   && !isglobalowner(ptable, pid)) {
 			    mgd_release(res);
     			php_log_err("Midgard: Attachment Write Access only for owner" TSRMLS_CC);
@@ -478,7 +476,7 @@ MGD_FUNCTION(int, open_attachment, ([int id, [string mode]]))
 	path = mgd_format(mgd_handle(), pool, "$s/$s", blobdir, location);
 
 #if PHP_MAJOR_VERSION > 4 || (PHP_MAJOR_VERSION == 4 && PHP_MINOR_VERSION >= 3)
-   stream = php_stream_open_wrapper_ex(path, zv_mode ? (*zv_mode)->value.str.val : "w", IGNORE_PATH | IGNORE_URL | STREAM_DISABLE_OPEN_BASEDIR, NULL, NULL);
+   stream = php_stream_open_wrapper_ex(path, zv_mode ? Z_STRVAL_P(zv_mode) : "w", IGNORE_PATH | IGNORE_URL | STREAM_DISABLE_OPEN_BASEDIR, NULL, NULL);
    if (stream == NULL) {
        RETVAL_FALSE_BECAUSE(MGD_ERR_INTERNAL);
    } else {
@@ -489,7 +487,7 @@ MGD_FUNCTION(int, open_attachment, ([int id, [string mode]]))
         * guid.
         */ 
        if (zv_mode) {
-           if (strcmp((*zv_mode)->value.str.val, "w") == 0) {
+           if (strcmp(Z_STRVAL_P(zv_mode), "w") == 0) {
                PHP_UPDATE_REPLIGARD("blobs", aid);
            }
        } else {
@@ -500,7 +498,7 @@ MGD_FUNCTION(int, open_attachment, ([int id, [string mode]]))
    }
 
 #else
-	fp = fopen(path, zv_mode ? (*zv_mode)->value.str.val : "w");
+	fp = fopen(path, zv_mode ? Z_STRVAL_P(zv_mode) : "w");
 
 	if (!fp) {
         RETVAL_FALSE_BECAUSE(MGD_ERR_ACCESS_DENIED);
@@ -517,7 +515,7 @@ MGD_FUNCTION(int, open_attachment, ([int id, [string mode]]))
              * but resolve problem of updating every Midgard application which needs to update
              * guid.
              */ 
-            if (strcmp((zv_mode)->value.str.val, "w") == 0) {
+            if (strcmp(Z_STRVAL_P(zv_mode), "w") == 0) {
                 PHP_UPDATE_REPLIGARD("blobs", aid);
             }
 
@@ -539,7 +537,7 @@ MGD_FUNCTION(int, open_attachment, ([int id, [string mode]]))
 
 MGD_FUNCTION(mixed, get_attachment, (int id))
 {
-	zval **id;
+	zval *id;
    zval *self;
    long aid;
 	CHECK_MGD;
@@ -572,7 +570,7 @@ MGD_FUNCTION(bool, serve_attachment, (int id))
 	char buf[1024];
 	const char *blobdir;
    int id;
-   zval *self, **zv_id;
+   zval *self, *zv_id;
    char *content_type;
 
 	CHECK_MGD;
@@ -662,7 +660,7 @@ MGD_FUNCTION(mixed, stat_attachment, (int id))
 	char *path;
 	struct stat blobstat;
    long id;
-   zval **zv_id, *self;
+   zval *zv_id, *self;
    midgard_directory_config *dcfg;
 
 	CHECK_MGD;
@@ -753,7 +751,7 @@ MGD_FUNCTION(bool, delete_attachment, (int id))
 	midgard_res *res;
 	const char *blobdir;
    long id;
-   zval *self, **zv_id;
+   zval *self, *zv_id;
 
 	CHECK_MGD;
 	RETVAL_FALSE;
@@ -823,12 +821,12 @@ MGD_FUNCTION(bool, delete_attachment, (int id))
 
 MGD_FUNCTION(bool, update_attachment, (int id, string name, string title, string mimetype, [int score, [int author]]))
 {
-	zval **id, **name, **title, **mimetype, **score, **author, *self;
+	zval *id, *name, *title, *mimetype, *score, *author, *self;
 	int ptable, pid;
 	midgard_res *res = NULL;
 	int sc, auth, calltype;
-    long aid;
-    zend_class_entry *ce;
+    	long aid;
+   	zend_class_entry *ce;
 
 	RETVAL_FALSE;
 	CHECK_MGD;
@@ -884,15 +882,15 @@ MGD_FUNCTION(bool, update_attachment, (int id, string name, string title, string
       if (!MGD_PROPFIND(self, "score", score)) { score = NULL; }
    }
 
-	convert_to_string_ex(name);
-	convert_to_string_ex(title);
-	convert_to_string_ex(mimetype);
+	convert_to_string_ex(&name);
+	convert_to_string_ex(&title);
+	convert_to_string_ex(&mimetype);
 
 	if (mgd_exists_bool(mgd_handle(), "blobs me, blobs other",
 		       "me.id=$d AND me.id<>other.id"
 		       " AND me.ptable=other.ptable AND me.pid=other.pid"
 		       " AND other.name=$q",
-		       aid, (*name)->value.str.val)) {
+		       aid, Z_STRVAL_P(name))) {
       mgd_release(res);
       RETURN_FALSE_BECAUSE(MGD_ERR_DUPLICATE);
 	}
@@ -922,14 +920,14 @@ MGD_FUNCTION(bool, update_attachment, (int id, string name, string title, string
             
 
 	if (score) {
-		convert_to_long_ex(score);
-		sc = (*score)->value.lval;
+		convert_to_long_ex(&score);
+		sc = Z_LVAL_P(score);
 	}
 	else
 		sc = 0;
 	if (author) {
-		convert_to_long_ex(author);
-		auth = (*author)->value.lval;
+		convert_to_long_ex(&author);
+		auth = Z_LVAL_P(author);
 	}
 	else
 		auth = 0;
@@ -950,8 +948,8 @@ MGD_FUNCTION(bool, update_attachment, (int id, string name, string title, string
 			    "name=$q,title=$q,mimetype=$q,score=$d,author=$d"
 			    : (score ? "name=$q,title=$q,mimetype=$q,score=$d" :
 			       "name=$q,title=$q,mimetype=$q")),
-			   aid, (*name)->value.str.val,
-			   (*title)->value.str.val, (*mimetype)->value.str.val,
+			   aid, Z_STRVAL_P(name),
+			   Z_STRVAL_P(title), Z_STRVAL_P(mimetype),
 			   sc, auth);
 	PHP_UPDATE_REPLIGARD("blobs", aid);
 	mgd_release(res);

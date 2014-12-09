@@ -1364,7 +1364,7 @@ PHP_FUNCTION(mgd_auth_midgard)
 
 MGD_FUNCTION(ret_type, connect, (type param))
 {
-zval **hostname, **database, **username, **password;
+zval *hostname, *database, *username, *password;
 
   if (MGDG(mgd) != NULL) RETURN_TRUE;
 
@@ -1374,21 +1374,17 @@ zval **hostname, **database, **username, **password;
             &username, &password) == FAILURE) {
       WRONG_PARAM_COUNT;
    }
-    convert_to_string_ex(hostname);
-    convert_to_string_ex(database);
-    convert_to_string_ex(username);
-    convert_to_string_ex(password);
+    convert_to_string_ex(&hostname);
+    convert_to_string_ex(&database);
+    convert_to_string_ex(&username);
+    convert_to_string_ex(&password);
 
    /*[eeh] this can safely be called multiple times. After the first
     * it'll return without doing anything
     */
    mgd_init();
 
-   MGDG(mgd) = mgd_connect(
-      (*hostname)->value.str.val,
-      (*database)->value.str.val,
-      (*username)->value.str.val,
-      (*password)->value.str.val);
+   MGDG(mgd) = mgd_connect(Z_STRVAL_P(hostname), Z_STRVAL_P(database), Z_STRVAL_P(username), Z_STRVAL_P(password));
 }
 #ifdef PHP_MIDGARD_LEGACY_API
 MGD_FUNCTION(ret_type, unsetuid, (type param))
@@ -1500,7 +1496,7 @@ MGD_FUNCTION(ret_type, set_lang, (type param))
 PHP_FUNCTION(mgd_set_lang)
 #endif
 {
-    zval **lang;
+    zval *lang;
     zval **hash, **vkey; /* Used in _MIDGARD_UPDATE_LONG */
 
     switch (ZEND_NUM_ARGS()) {
@@ -1512,10 +1508,10 @@ PHP_FUNCTION(mgd_set_lang)
     default:
         WRONG_PARAM_COUNT;
     }
-    convert_to_long_ex(lang);
-    mgd_internal_set_lang(mgd_handle(), (*lang)->value.lval);
+    convert_to_long_ex(&lang);
+    mgd_internal_set_lang(mgd_handle(), Z_LVAL_P(lang));
     
-    _MIDGARD_UPDATE_LONG("lang", (*lang)->value.lval);
+    _MIDGARD_UPDATE_LONG("lang", Z_LVAL_P(lang));
 
     RETURN_TRUE;
 }
@@ -1557,7 +1553,7 @@ PHP_FUNCTION(mgd_get_default_lang)
 
 MGD_FUNCTION(ret_type, set_lang_by_code, (type param))
 {
-    zval **lang;
+    zval *lang;
     midgard_res *res;
     int id;
 
@@ -1570,8 +1566,8 @@ MGD_FUNCTION(ret_type, set_lang_by_code, (type param))
     default:
         WRONG_PARAM_COUNT;
     }
-    convert_to_string_ex(lang);
-    res = mgd_ungrouped_select(mgd_handle(), "id", "language", "code=$q", NULL, (*lang)->value.str.val);
+    convert_to_string_ex(&lang);
+    res = mgd_ungrouped_select(mgd_handle(), "id", "language", "code=$q", NULL, Z_STRVAL_P(lang));
 
     if (res && mgd_fetch(res)) {
       id = atol(mgd_colvalue(res, 0));
@@ -1585,7 +1581,7 @@ MGD_FUNCTION(ret_type, set_lang_by_code, (type param))
 
 MGD_FUNCTION(ret_type, set_parameters_defaultlang, (type param))
 {
-    zval **lang;
+    zval *lang;
 
     switch (ZEND_NUM_ARGS()) {
     case 1:
@@ -1596,14 +1592,14 @@ MGD_FUNCTION(ret_type, set_parameters_defaultlang, (type param))
     default:
         WRONG_PARAM_COUNT;
     }
-    convert_to_long_ex(lang);
-    mgd_internal_set_parameters_defaultlang(mgd_handle(), (*lang)->value.lval);
+    convert_to_long_ex(&lang);
+    mgd_internal_set_parameters_defaultlang(mgd_handle(), Z_LVAL_P(lang));
     RETURN_TRUE;
 }
 
 MGD_FUNCTION(ret_type, set_attachments_defaultlang, (type param))
 {
-    zval **lang;
+    zval *lang;
 
     switch (ZEND_NUM_ARGS()) {
     case 1:
@@ -1614,8 +1610,8 @@ MGD_FUNCTION(ret_type, set_attachments_defaultlang, (type param))
     default:
         WRONG_PARAM_COUNT;
     }
-    convert_to_long_ex(lang);
-    mgd_internal_set_attachments_defaultlang(mgd_handle(), (*lang)->value.lval);
+    convert_to_long_ex(&lang);
+    mgd_internal_set_attachments_defaultlang(mgd_handle(), Z_LVAL_P(lang));
     RETURN_TRUE;
 }
 
@@ -1769,7 +1765,7 @@ void _make_midgard_global()
 
 MGD_FUNCTION(ret_type, set_style, (type param))
 {
-  zval **style;
+  zval *style;
   midgard_request_config *rcfg = mgd_rcfg(); 
     
   CHECK_MGD;
@@ -1781,9 +1777,9 @@ MGD_FUNCTION(ret_type, set_style, (type param))
 
     case 1:
       if (zend_parse_parameters(1 TSRMLS_CC, "z", &style) != SUCCESS) { WRONG_PARAM_COUNT; }
-      convert_to_long_ex(style);
+      convert_to_long_ex(&style);
             
-      midgard_style_get_elements(MGDG(mgd), (*style)->value.lval, 
+      midgard_style_get_elements(MGDG(mgd), Z_LVAL_P(style), 
       midgard_pc_set_element, rcfg->elements);
      
       break;

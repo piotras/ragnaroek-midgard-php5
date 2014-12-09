@@ -67,7 +67,7 @@ extern int le_midgard_list_fetch;
       (void**)&(retval)) == SUCCESS)
 
 #define IDINIT \
-   int id; zval *self, **id_zval; \
+   int id; zval *self, *id_zval; \
    if (!mgd_handle()) \
       RETURN_FALSE_BECAUSE(MGD_ERR_NOT_CONNECTED); \
    if ((self = getThis()) != NULL) { \
@@ -79,8 +79,8 @@ extern int le_midgard_list_fetch;
             || zend_parse_parameters(1 TSRMLS_CC, "z", &id_zval) != SUCCESS) \
       WRONG_PARAM_COUNT; \
    } \
-   convert_to_long_ex(id_zval); \
-   id = (*id_zval)->value.lval;
+   convert_to_long_ex(&id_zval); \
+   id = Z_LVAL_P(id_zval);
 
 #define PHP_CREATE_REPLIGARD(table,id)
 #define PHP_CREATE_REPLIGARD_VOID(table,id)
