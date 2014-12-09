@@ -56,15 +56,15 @@ MGD_FUNCTION(string, preparse, (type param))
 PHP_FUNCTION(mgd_preparse)
 #endif
 {
-	zval **phpcode;
+	zval *phpcode;
 	GByteArray *buffer;
 	CHECK_MGD;   
 
 	if (ZEND_NUM_ARGS() != 1 && ZEND_NUM_ARGS() != 2) { WRONG_PARAM_COUNT; }
 	if (zend_parse_parameters(1 TSRMLS_CC, "z", &phpcode) != SUCCESS) { WRONG_PARAM_COUNT; }
 	
-	convert_to_string_ex(phpcode);
-	buffer = mgd_preparse_string((*phpcode)->value.str.val);
+	convert_to_string_ex(&phpcode);
+	buffer = mgd_preparse_string(Z_STRVAL_P(phpcode));
 	
 	RETVAL_STRING((gchar *)buffer->data, 1);
 	g_byte_array_free(buffer, TRUE);
@@ -77,7 +77,7 @@ PHP_FUNCTION(mgd_format)
 #endif
 {
 	midgard_pool *pool;
-	zval **value, **formatter;
+	zval *value, *formatter;
 	char *fmt = "";
 	char fmtspec[3];
 	CHECK_MGD;
@@ -99,10 +99,10 @@ PHP_FUNCTION(mgd_format)
 			break;
 	}
 	
-	convert_to_string_ex(value);
+	convert_to_string_ex(&value);
 	if (fmt) {
-		convert_to_string_ex(formatter);
-		fmt = (*formatter)->value.str.val;
+		convert_to_string_ex(&formatter);
+		fmt = Z_STRVAL_P(formatter);
 	} else {
 		fmt = "";
 	}
@@ -133,6 +133,6 @@ PHP_FUNCTION(mgd_format)
 	}
 	/* We should duplicate string , but midgard pool is not freed anyway */
 	RETVAL_STRING(mgd_format(mgd_handle(), pool, fmtspec,
-				(*value)->value.str.val), 1);
+				Z_STRVAL_P(value)), 1);
 	mgd_free_pool(pool);
 }

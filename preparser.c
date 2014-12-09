@@ -83,7 +83,7 @@ char * php_midgard_template(midgard_pool * pool, char * name)
 
 MGD_FUNCTION(ret_type, template, (type param))
 {
-	zval **arg;
+	zval *arg;
 	char *tmp;
 	midgard_pool * pool;
 
@@ -92,9 +92,9 @@ MGD_FUNCTION(ret_type, template, (type param))
 	if (ZEND_NUM_ARGS() != 1 || zend_parse_parameters(1 TSRMLS_CC, "z", &arg)==FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
-	convert_to_string_ex(arg);
+	convert_to_string_ex(&arg);
 	pool = mgd_alloc_pool();
-	tmp = php_midgard_template(pool, (*arg)->value.str.val);
+	tmp = php_midgard_template(pool, Z_STRVAL_P(arg));
 
 	if( tmp== NULL ) {
 		RETVAL_NULL();
@@ -202,7 +202,7 @@ char * php_midgard_variable(midgard_pool * pool, char * name, char * member, cha
 
 MGD_FUNCTION(ret_type, variable, (type param))
 {
-	zval **var, **arg, **rec;
+	zval *var, *arg, *rec;
 	char *tmp;
 	midgard_pool *pool=NULL;
 
@@ -211,8 +211,8 @@ MGD_FUNCTION(ret_type, variable, (type param))
 			WRONG_PARAM_COUNT;
 		} else {
 			pool = mgd_alloc_pool();
-			convert_to_string_ex(var);
-			tmp = php_midgard_variable(pool, (*var)->value.str.val, NULL, NULL);
+			convert_to_string_ex(&var);
+			tmp = php_midgard_variable(pool, Z_STRVAL_P(var), NULL, NULL);
 			if( tmp== NULL ) {
 				RETVAL_STRING("",1);
 			} else {
@@ -226,10 +226,9 @@ MGD_FUNCTION(ret_type, variable, (type param))
 			WRONG_PARAM_COUNT;
 		} else {
 			pool = mgd_alloc_pool();
-			convert_to_string_ex(var);
-			convert_to_string_ex(arg);
-			tmp = php_midgard_variable(pool, (*var)->value.str.val, NULL,
-											 (*arg)->value.str.val);
+			convert_to_string_ex(&var);
+			convert_to_string_ex(&arg);
+			tmp = php_midgard_variable(pool, Z_STRVAL_P(var), NULL, Z_STRVAL_P(arg));
 			if( tmp== NULL ) {
 				RETVAL_STRING("",1);
 			} else {
@@ -243,17 +242,13 @@ MGD_FUNCTION(ret_type, variable, (type param))
 			WRONG_PARAM_COUNT;
 		} else {
 			pool = mgd_alloc_pool();
-			convert_to_string_ex(var);
-			convert_to_string_ex(arg);
-			convert_to_string_ex(rec);
-			if( (*arg)->value.str.val[0] == '\0' ) {
-				tmp = php_midgard_variable(pool, (*var)->value.str.val,
-												 (*rec)->value.str.val,
-												 NULL);
+			convert_to_string_ex(&var);
+			convert_to_string_ex(&arg);
+			convert_to_string_ex(&rec);
+			if( arg->value.str.val[0] == '\0' ) {
+				tmp = php_midgard_variable(pool, Z_STRVAL_P(var), Z_STRVAL_P(rec), NULL);
 			} else {
-				tmp = php_midgard_variable(pool, (*var)->value.str.val,
-												 (*rec)->value.str.val,
-												 (*arg)->value.str.val);
+				tmp = php_midgard_variable(pool, Z_STRVAL_P(var), Z_STRVAL_P(rec), Z_STVAL_P(arg));
 			}
 			if( tmp== NULL ) {
 				RETVAL_STRING("",1);
@@ -348,7 +343,7 @@ static int mgd_eval_string(char *str, zval *retval_ptr, char *string_name CLS_DC
 
 MGD_FUNCTION(ret_type, eval, (type param))
 {
- 	zval **string, **name;
+ 	zval *string, *name;
 	char *tmp;
   GByteArray *buffer;
   midgard_request_config *rcfg = mgd_rcfg(); 
@@ -358,14 +353,14 @@ MGD_FUNCTION(ret_type, eval, (type param))
 	switch (ZEND_NUM_ARGS()) {
 		case 2:
 			if (zend_parse_parameters(2 TSRMLS_CC, "zz", &string, &name) == SUCCESS) {
-				convert_to_string_ex(string);
-				convert_to_string_ex(name);
-				tmp = (*name)->value.str.val;
+				convert_to_string_ex(&string);
+				convert_to_string_ex(&name);
+				tmp = Z_STRVAL_P(name);
 				break;
 			}
 		case 1:
 			if (zend_parse_parameters(1 TSRMLS_CC, "z", &string) == SUCCESS) {
-				convert_to_string_ex(string);
+				convert_to_string_ex(&string);
 				tmp = "mgd_eval()";
 				break;
 			}
@@ -373,8 +368,8 @@ MGD_FUNCTION(ret_type, eval, (type param))
 			WRONG_PARAM_COUNT;
 	}
 
-	if((*string)->value.str.len) {
-      buffer = mgd_preparse_string((*string)->value.str.val);
+	if(string->value.str.len) {
+		buffer = mgd_preparse_string(Z_STRVAL_P(string));
 
 /* OUTPUT IS SENT TO BROWSER WARNING! , uncomment if You really want this 
   
@@ -387,8 +382,7 @@ MGD_FUNCTION(ret_type, eval, (type param))
 			zend_bailout(); //exit(0);
 		}
 */
-    
-      g_byte_array_free(buffer, TRUE);
+		g_byte_array_free(buffer, TRUE);
 	}
 }
 
@@ -461,7 +455,7 @@ MGD_FUNCTION(ret_type, snippet_required, (type param))
 
 MGD_FUNCTION(ret_type, ref, (type param))
 {
-  zval **mode, **guid, **attrx, **attry, **label;
+  zval *mode, *guid, *attrx, *attry, *label;
   midgard_res *res;
   midgard_pool *pool;
   int id, params;
@@ -485,11 +479,11 @@ MGD_FUNCTION(ret_type, ref, (type param))
     WRONG_PARAM_COUNT;
   }
 
-  convert_to_long_ex(mode);
-  convert_to_string_ex(guid);
-  convert_to_string_ex(attrx);
-  convert_to_string_ex(attry);
-  if (params == 5) {    convert_to_string_ex(label);
+  convert_to_long_ex(&mode);
+  convert_to_string_ex(&guid);
+  convert_to_string_ex(&attrx);
+  convert_to_string_ex(&attry);
+  if (params == 5) {    convert_to_string_ex(&label);
   }
   rcfg = mgd_rcfg();
 
@@ -499,8 +493,8 @@ MGD_FUNCTION(ret_type, ref, (type param))
 
   pool = mgd_alloc_pool();
 
-  guidstr = mgd_strndup(pool, (*guid)->value.str.val, 32);
-  namestr = strchr((*guid)->value.str.val, '/');
+  guidstr = mgd_strndup(pool, Z_STRVAL_P(guid), 32);
+  namestr = strchr(Z_STRVAL_P(guid), '/');
 
   res = mgd_sitegroup_select(mgd_handle(), "realm,id", "repligard",
 			     "guid=$q", NULL, guidstr);
@@ -517,18 +511,18 @@ MGD_FUNCTION(ret_type, ref, (type param))
   prefix = mgd_strndup(pool, rcfg->uri, rcfg->prelen);
   ah_prefix = mgd_get_ah_prefix(mgd_handle());
 
-  if ((*mode)->value.lval) {
+  if (mode->value.lval) {
     if (params == 4 && !strcmp(table, "blobs") && mgd_exists_id(mgd_handle(), "blobs", "id=$d", id)) {
       if (namestr) {
         RETVAL_STRING(g_strconcat("<img", 
-              (*attrx)->value.str.val, "\"", prefix, "/", 
+              Z_STRVAL_P(attrx), "\"", prefix, "/", 
               ah_prefix, "/", guidstr, namestr, "\"", 
-              (*attry)->value.str.val, " />", NULL), 1);  
+              Z_STRVAL_P(attry), " />", NULL), 1);  
       } else {
         RETVAL_STRING(g_strconcat("<img", 
-              (*attrx)->value.str.val, "\"", prefix, "/", 
+              Z_STRVAL_P(attrx), "\"", prefix, "/", 
               ah_prefix, "/", guidstr, "\"", 
-              (*attry)->value.str.val, " />", NULL), 1);
+              Z_STRVAL_P(attry), " />", NULL), 1);
       }
     } else {
       RETVAL_STRING("",1);
@@ -538,15 +532,15 @@ MGD_FUNCTION(ret_type, ref, (type param))
       if (!strcmp(table, "blobs") && mgd_exists_id(mgd_handle(), "blobs", "id=$d", id)) {
         if (namestr) {
           RETVAL_STRING(g_strconcat("<a",
-                (*attrx)->value.str.val, "\"", 
+                Z_STRVAL_P(attrx), "\"", 
                 prefix, "/", ah_prefix, "/", guidstr, 
-                namestr, "\"", (*attry)->value.str.val, ">", 
-                (*label)->value.str.val, "</a>", NULL), 1);
+                namestr, "\"", Z_STRVAL_P(attry), ">", 
+                Z_STRVAL_P(label), "</a>", NULL), 1);
         } else {
           RETVAL_STRING(g_strconcat("<a",  
-                (*attrx)->value.str.val, "\"",prefix, "/", 
-                ah_prefix, "/", guidstr, "\"", (*attry)->value.str.val, ">", 
-                (*label)->value.str.val, "</a>", NULL), 1);
+                Z_STRVAL_P(attrx), "\"",prefix, "/", 
+                ah_prefix, "/", guidstr, "\"", Z_STRVAL_P(attry), ">", 
+                Z_STRVAL_P(label), "</a>", NULL), 1);
         }
       } else if (!strcmp(table, "page") && mgd_exists_id(mgd_handle(), "page", "id=$d", id)) {
         path = NULL;
@@ -572,9 +566,9 @@ MGD_FUNCTION(ret_type, ref, (type param))
         }
         if (path) {
           RETVAL_STRING(g_strconcat("<a",
-                (*attrx)->value.str.val, "\"",prefix, "/", 
-                path, "\"", (*attry)->value.str.val, ">", 
-                (*label)->value.str.val, "</a>", NULL), 1);
+                Z_STRVAL_P(attrx), "\"",prefix, "/", 
+                path, "\"", Z_STRVAL_P(attry), ">", 
+                Z_STRVAL_P(label), "</a>", NULL), 1);
         } else {
           RETVAL_STRING("",1);
         }
