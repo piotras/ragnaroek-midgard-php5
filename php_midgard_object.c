@@ -721,7 +721,11 @@ PHP_FUNCTION(_php_midgard_new_query_builder)
 {
 	CHECK_MGD;
 
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
 	const char *_cname_space = NULL; 
+#else 
+	char *_cname_space = NULL;
+#endif
 	const char *_class_name = get_active_class_name(&_cname_space TSRMLS_CC); 
 
 	MidgardQueryBuilder *builder =
@@ -749,7 +753,11 @@ PHP_FUNCTION(_php_midgard_new_collector)
 		return;
 
 	GValue *gvalue = php_midgard_zval2gvalue(zvalue);
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
 	const char *_cname_space = NULL;
+#else
+	char *_cname_space = NULL;
+#endif
 	const char *_class_name = get_active_class_name(&_cname_space TSRMLS_CC);
 
 	MidgardCollector *collector =
@@ -768,8 +776,12 @@ PHP_FUNCTION(_php_midgard_new_collector)
 PHP_FUNCTION(_php_midgard_new_reflection_property) 
 {
 	CHECK_MGD;
-	
+
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3	
 	const char *_cname_space = NULL;
+#else
+	char *_cname_space = NULL;
+#endif
 	const char *_class_name = get_active_class_name(&_cname_space TSRMLS_CC);
 	
 	MidgardObjectClass *klass = 
@@ -1563,8 +1575,11 @@ static void __declare_class_properties(const gchar *class_name)
 	GParamSpec **pspecs = g_object_class_list_properties(G_OBJECT_CLASS(klass), &n_prop);
 
 	for (i = 0; i < n_prop; i++) {
-
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
 		zend_declare_property_null(*ce, pspecs[i]->name, strlen(pspecs[i]->name), ZEND_ACC_PUBLIC TSRMLS_CC);
+#else
+		zend_declare_property_null(*ce, (char*)pspecs[i]->name, strlen(pspecs[i]->name), ZEND_ACC_PUBLIC TSRMLS_CC);
+#endif
 	}
 }
 

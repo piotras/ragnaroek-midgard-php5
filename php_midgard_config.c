@@ -139,7 +139,6 @@ static PHP_METHOD(midgard_config, list_files)
 {
 	RETVAL_FALSE;
 	zend_bool user = FALSE;
-	zval *zval_object = getThis();
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC,  
 				"|b", &user) == FAILURE) {

@@ -869,9 +869,15 @@ void php_midgard_init_properties_objects(zval *zobject)
 			(php_midgard_gobject *)zend_object_store_get_object(prop_zobject TSRMLS_CC);
 		php_gobject->gobject = prop_gobject;
 
+#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 3
 		zend_update_property(Z_OBJCE_P(zobject), zobject, 
 				pspecs[i]->name, strlen(pspecs[i]->name), 
 				prop_zobject TSRMLS_CC);
+#else 
+		zend_update_property(Z_OBJCE_P(zobject), zobject, 
+				(char *)pspecs[i]->name, strlen(pspecs[i]->name), 
+				prop_zobject TSRMLS_CC);
+#endif
 
 		g_value_unset(&oval);
 	}
