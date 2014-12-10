@@ -35,7 +35,7 @@ MGD_FUNCTION(ret_type, list_sitegroups, (type param))
 
 MGD_FUNCTION(ret_type, create_sitegroup, (type param))
 {
-	zval **zv_name, *self;
+	zval *zv_name, *self;
 
 	RETVAL_FALSE;
 	CHECK_MGD;
@@ -58,26 +58,25 @@ MGD_FUNCTION(ret_type, create_sitegroup, (type param))
 			WRONG_PARAM_COUNT;
 	}
 
-	convert_to_string_ex(zv_name);
+	convert_to_string_ex(&zv_name);
 
 	/* no 'magic' chars in sitegroup name */
-	if (strpbrk((*zv_name)->value.str.val, MIDGARD_LOGIN_RESERVED_CHARS))
+	if (strpbrk(Z_STRVAL_P(zv_name), MIDGARD_LOGIN_RESERVED_CHARS))
 		RETURN_FALSE_BECAUSE(MGD_ERR_INVALID_NAME);
 
-	if (mgd_exists_bool
-	    (mgd_handle(), "sitegroup", "name=$q",
-	     (*zv_name)->value.str.val)) RETURN_FALSE_BECAUSE(MGD_ERR_DUPLICATE);
+	if (mgd_exists_bool(mgd_handle(), "sitegroup", "name=$q", Z_STRVAL_P(zv_name)))
+		RETURN_FALSE_BECAUSE(MGD_ERR_DUPLICATE);
 
 	php_midgard_create(return_value, self, "sitegroup",
-			   "name,admingroup", "$q,$d", (*zv_name)->value.str.val,
+			   "name,admingroup", "$q,$d", Z_STRVAL_P(zv_name),
 			   0);
 
-	PHP_CREATE_REPLIGARD("sitegroup", return_value->value.lval);
+	PHP_CREATE_REPLIGARD("sitegroup", Z_LVAL_P(return_value));
 }
 
 MGD_FUNCTION(ret_type, get_sitegroup, (type param))
 {
-	zval **id;
+	zval *id;
 	CHECK_MGD;
 
 	switch (ZEND_NUM_ARGS()) {
@@ -91,19 +90,19 @@ MGD_FUNCTION(ret_type, get_sitegroup, (type param))
 		   WRONG_PARAM_COUNT;
 		}
 
-		convert_to_long_ex(id);
+		convert_to_long_ex(&id);
 		break;
 
 	default:
 		WRONG_PARAM_COUNT;
 	}
 
-   php_midgard_get_object(return_value, MIDGARD_OBJECT_SITEGROUP, (*id)->value.lval);
+   	php_midgard_get_object(return_value, MIDGARD_OBJECT_SITEGROUP, Z_LVAL_P(id));
 }
 
 MGD_FUNCTION(ret_type, update_sitegroup, (type param))
 {
-	zval **zv_id, **zv_name, **zv_admingroup, **zv_realm, *self;
+	zval *zv_id, *zv_name, *zv_admingroup, *zv_realm, *self;
 	int group;
 	int id, admingroup;
 
@@ -134,19 +133,18 @@ MGD_FUNCTION(ret_type, update_sitegroup, (type param))
 		      &zv_realm) != SUCCESS)) WRONG_PARAM_COUNT;
 	}
 
-	convert_to_string_ex(zv_name);
-	convert_to_string_ex(zv_realm);
-	convert_to_long_ex(zv_admingroup);
-	convert_to_long_ex(zv_id);
+	convert_to_string_ex(&zv_name);
+	convert_to_string_ex(&zv_realm);
+	convert_to_long_ex(&zv_admingroup);
+	convert_to_long_ex(&zv_id);
 
-	id = (*zv_id)->value.lval;
-	admingroup = (*zv_admingroup)->value.lval;
+	id = Z_LVAL_P(zv_id);
+	admingroup = Z_LVAL_P(zv_admingroup);
 
 	if (id == 0)
 		RETURN_FALSE_BECAUSE(MGD_ERR_ACCESS_DENIED);
 
-	group = mgd_exists_id(mgd_handle(), "sitegroup", "name=$q",
-				(*zv_name)->value.str.val);
+	group = mgd_exists_id(mgd_handle(), "sitegroup", "name=$q", Z_STRVAL_P(zv_name));
 	if (group != 0 && group != id)
 		RETURN_FALSE_BECAUSE(MGD_ERR_ACCESS_DENIED);
 
@@ -161,8 +159,8 @@ MGD_FUNCTION(ret_type, update_sitegroup, (type param))
 			   "sitegroup",
 			   "name=$q, admingroup=$d, realm=$q",
 			   id,
-			   (*zv_name)->value.str.val,
-			   admingroup, (*zv_realm)->value.str.val);
+			   Z_STRVAL_P(zv_name),
+			   admingroup, Z_STRVAL_P(zv_realm));
 	PHP_UPDATE_REPLIGARD("sitegroup", id);
 }
 
@@ -219,7 +217,7 @@ int sitegroup;
 MGD_FUNCTION(ret_type, oop_sitegroup_set, (type param))
 {
    zval *self;
-   zval **zv_sitegroup;
+   zval *zv_sitegroup;
    zval **zv_table, **zv_id;
    char table_i[256];
    midgard_res *res;
@@ -257,22 +255,21 @@ MGD_FUNCTION(ret_type, oop_sitegroup_set, (type param))
       WRONG_PARAM_COUNT;
    }
 
-   convert_to_long_ex(zv_sitegroup);
+   convert_to_long_ex(&zv_sitegroup);
 
-   if ((*zv_sitegroup)->value.lval != 0
-         && !mgd_exists_bool(mgd_handle(), "sitegroup", "id=$d",
-               (*zv_sitegroup)->value.lval)) {
+   if (Z_LVAL_P(zv_sitegroup) != 0
+         && !mgd_exists_bool(mgd_handle(), "sitegroup", "id=$d", Z_LVAL_P(zv_sitegroup))) {
       RETURN_FALSE_BECAUSE(MGD_ERR_NOT_EXISTS);
    }
 
-   add_property_long(getThis(), "sitegroup", (*zv_sitegroup)->value.lval);
+   add_property_long(getThis(), "sitegroup", Z_LVAL_P(zv_sitegroup));
    
    php_midgard_update(return_value,
       (*zv_table)->value.str.val,
       "sitegroup=$d", (*zv_id)->value.lval,
-      (*zv_sitegroup)->value.lval);
+      Z_LVAL_P(zv_sitegroup));
    mgd_update_repligard(mgd_handle(), (*zv_table)->value.str.val, (*zv_id)->value.lval,
-      "sitegroup=$d", (*zv_sitegroup)->value.lval);
+      "sitegroup=$d", Z_LVAL_P(zv_sitegroup));
 
    TOUCH_CACHE;
    if (strcmp((*zv_table)->value.str.val, "article") == 0 || strcmp((*zv_table)->value.str.val, "element") == 0 || strcmp((*zv_table)->value.str.val, "page") == 0 || 
@@ -286,9 +283,9 @@ MGD_FUNCTION(ret_type, oop_sitegroup_set, (type param))
 	  php_midgard_update(return_value,
 			     table_i,
 			     "sitegroup=$d", i_id,
-			     (*zv_sitegroup)->value.lval);
+			     Z_LVAL_P(zv_sitegroup));
 	  mgd_update_repligard(mgd_handle(), table_i, i_id,
-			       "sitegroup=$d", (*zv_sitegroup)->value.lval);
+			       "sitegroup=$d", Z_LVAL_P(zv_sitegroup));
 }
      }
 }
