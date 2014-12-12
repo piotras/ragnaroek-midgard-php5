@@ -388,11 +388,7 @@ MGD_FUNCTION(ret_type, eval, (type param))
 
 #endif
 
-#ifdef PHP_MIDGARD_LEGACY_API
-MGD_FUNCTION(ret_type, snippet, (type param))
-#else 
 PHP_FUNCTION(mgd_snippet)
-#endif
 {
 	midgard *mgd = mgd_handle(); 
 	const gchar *path;

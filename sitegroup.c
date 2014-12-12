@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "mgd_internal.h"
 #include "mgd_oop.h"
 
-//#ifdef PHP_MIDGARD_LEGACY_API
-
 MGD_FUNCTION(ret_type, has_sitegroups, (type param))
 {
 	RETURN_TRUE;
@@ -298,12 +296,6 @@ static zend_function_entry midgardsitegroupMethods[] = {
    PHP_FALIAS(create,	         mgd_create_sitegroup,	NULL)
    PHP_FALIAS(update,	         mgd_update_sitegroup,	NULL)
    PHP_FALIAS(delete,	         mgd_delete_sitegroup,	NULL)
-#ifdef PHP_MIDGARD_LEGACY_API
-   PHP_FALIAS(fetch,	            mgd_oop_list_fetch,		NULL)
-   PHP_FALIAS(guid,		         mgd_oop_guid_get,		   NULL)
-   MIDGARD_OOP_PARAMETER_METHODS
-   MIDGARD_OOP_ATTACHMENT_METHODS
-#endif
    {  NULL,             NULL,                         NULL}
 };
 
@@ -315,14 +307,4 @@ MidgardClass midgardsitegroup = {
    NULL
 };
 
-/*
-MIDGARD_CLASS(midgardsitegroup, sitegroup, midgardsitegroup, sitegroup)
-   * MidgardClass midgardsitegroup = {
-   "midgardsitegroup",
-   "sitegroup",
-   midgardsitegroupMethods,
-   {},
-   NULL
-   };
-*/
-//#endif
+

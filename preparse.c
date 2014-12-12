@@ -50,11 +50,7 @@ GByteArray *mgd_preparse_string(char *phpcode)
 	return buffer;
 }
 
-#ifdef PHP_MIDGARD_LEGACY_API
-MGD_FUNCTION(string, preparse, (type param))
-#else
 PHP_FUNCTION(mgd_preparse)
-#endif
 {
 	zval *phpcode;
 	GByteArray *buffer;
@@ -70,11 +66,7 @@ PHP_FUNCTION(mgd_preparse)
 	g_byte_array_free(buffer, TRUE);
 }
 
-#ifdef PHP_MIDGARD_LEGACY_API
-MGD_FUNCTION(string, format, (string value, string formatspec))
-#else
 PHP_FUNCTION(mgd_format)
-#endif
 {
 	midgard_pool *pool;
 	zval *value, *formatter;

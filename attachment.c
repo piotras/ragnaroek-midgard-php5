@@ -33,8 +33,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <unistd.h>
 #include <ctype.h>
 
-//#ifdef PHP_MIDGARD_LEGACY_API
-
 enum { MGD_BLOB_CALL_FUNC, MGD_BLOB_CALL_SELF, MGD_BLOB_CALL_OTHER };
 
 static long mgd_get_blob_id(zval *self, zval *name, int *calltype)
@@ -960,14 +958,8 @@ static zend_function_entry MidgardAttachmentMethods[] =
       PHP_FALIAS(update,            mgd_update_attachment,  NULL)
       PHP_FALIAS(delete,            mgd_delete_attachment,  NULL)
       PHP_FALIAS(stat,              mgd_stat_attachment,    NULL)
-#ifdef PHP_MIDGARD_LEGACY_API
-      PHP_FALIAS(fetch,             mgd_oop_list_fetch,     NULL)
-      MIDGARD_OOP_PARAMETER_METHODS
-      MIDGARD_OOP_SITEGROUP_METHODS
-#else
       PHP_FALIAS(open,              mgd_open_attachment,     NULL)
       PHP_FALIAS(serve,             mgd_serve_attachment,    NULL)
-#endif
       { NULL, NULL, NULL }
    };
 MidgardClass MidgardAttachment = {
@@ -977,5 +969,3 @@ MidgardClass MidgardAttachment = {
    {},
    NULL
 };
-
-//#endif

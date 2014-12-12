@@ -74,14 +74,6 @@ if test "$PHP_MIDGARD_REGEX" != "php"; then
 	AC_DEFINE(MIDGARD_PHP_REGEX, 1, [ ])
 fi
 
-_PHP_MIDGARD_LEGACY_API=no
-AC_MSG_CHECKING([whether to compile legacy API (disabled by default)])
-AC_ARG_WITH(legacy-api, [  --with-legacy-api    compile with legacy API ], _PHP_MIDGARD_LEGACY_API=[$]withval, _PHP_MIDGARD_LEGACY_API="no")
-AC_MSG_RESULT($_PHP_MIDGARD_LEGACY_API)
-if test "$_PHP_MIDGARD_LEGACY_API" != "no"; then
-	AC_DEFINE(PHP_MIDGARD_LEGACY_API, 1, [ ])
-fi
-
 MIDGARD_INCLINE=`$MIDGARD_CONFIG --cflags midgard`
 MIDGARD_LIBLINE=`$MIDGARD_CONFIG --libs midgard`
 
@@ -92,4 +84,4 @@ CFLAGS="$CFLAGS -Wall -fno-strict-aliasing"
 
 AC_DEFINE(HAVE_MIDGARD, 1, [ ])
 PHP_SUBST(MIDGARD_SHARED_LIBADD)
-PHP_NEW_EXTENSION(midgard, midgard.c preparser.c preparse.c query_builder.c php_midgard_reflection_property.c php_midgard_collector.c php_midgard_object_parameter.c php_midgard_object_attachment.c php_midgard_config.c php_midgard_gobject_generic.c php_midgard_blob.c php_midgard_object.c php_midgard_object_class.c php_midgard_connection.c article.c parameter.c attachment.c oop.c topic.c element.c group.c host.c member.c calendar.c event.c eventmember.c page.c pageelement.c pagelink.c person.c snippet.c snippetdir.c style.c sitegroup.c language.c quota.c php_midgard_replicator.c php_midgard_user.c php_midgard_dbus.c php_midgard_sitegroup.c, $ext_shared)
+PHP_NEW_EXTENSION(midgard, midgard.c preparser.c preparse.c query_builder.c php_midgard_reflection_property.c php_midgard_collector.c php_midgard_object_parameter.c php_midgard_object_attachment.c php_midgard_config.c php_midgard_gobject_generic.c php_midgard_blob.c php_midgard_object.c php_midgard_object_class.c php_midgard_connection.c attachment.c oop.c pagelink.c sitegroup.c php_midgard_replicator.c php_midgard_user.c php_midgard_dbus.c php_midgard_sitegroup.c, $ext_shared)

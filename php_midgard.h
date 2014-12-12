@@ -150,7 +150,6 @@ ZEND_END_MODULE_GLOBALS(midgard)
 MGD_FUNCTION(ret_type, import_object, (type param));
 MGD_FUNCTION(ret_type, get_sitegroup_size, (type param));
 
-#ifndef PHP_MIDGARD_LEGACY_API
 PHP_FUNCTION(mgd_get_midgard);
 PHP_FUNCTION(mgd_preparse);
 PHP_FUNCTION(mgd_snippet);
@@ -177,8 +176,6 @@ PHP_FUNCTION(mgd_stat_attachment);
 
 extern MidgardClass MidgardAttachment;
 extern MidgardClass midgardsitegroup;
-
-#endif
 
 #define MGD_PHP_PCLASS_NAME \
   ce = Z_OBJCE_P(getThis()); \

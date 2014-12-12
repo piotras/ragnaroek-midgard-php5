@@ -179,80 +179,6 @@ void php_midgard_get_by_name_lang(MidgardClass *species, zval * return_value,
 
 void php_midgard_get_object(zval *return_value, int table, int id);
 
-#ifdef PHP_MIDGARD_LEGACY_API
-extern MidgardClass MidgardArticle;
-extern MidgardClass MidgardAttachment;
-extern MidgardClass MidgardElement;
-extern MidgardClass MidgardEvent;
-extern MidgardClass MidgardEventMember;
-extern MidgardClass MidgardGroup;
-extern MidgardClass MidgardHost;
-extern MidgardClass MidgardMember;
-extern MidgardClass MidgardPage;
-extern MidgardClass MidgardPageElement;
-extern MidgardClass MidgardParameter;
-extern MidgardClass MidgardPerson;
-extern MidgardClass MidgardSnippet;
-extern MidgardClass MidgardSnippetdir;
-extern MidgardClass MidgardStyle;
-extern MidgardClass MidgardTopic;
-#if HAVE_MIDGARD_MULTILANG
-extern MidgardClass MidgardLanguage;
-#endif /* HAVE_MIDGARD_MULTILANG */
-#if HAVE_MIDGARD_QUOTA
-extern MidgardClass MidgardQuota;
-#endif /* HAVE_MIDGARD_MULTILANG */
-extern MidgardClass midgardsitegroup;
-#if HAVE_MIDGARD_PAGELINKS
-extern MidgardClass MidgardPagelink;
-#endif
-
-/* OOP_SITEGROUP_METHODS include also method for
-   gathering GUID for given object
-*/
-#define MIDGARD_OOP_SITEGROUP_METHODS \
-	PHP_FALIAS(setsitegroup,      mgd_oop_sitegroup_set, NULL) \
-	PHP_FALIAS(getsitegroup,      mgd_oop_sitegroup_get, NULL) \
-	PHP_FALIAS(guid,              mgd_oop_guid_get,      NULL) \
-	PHP_FALIAS(parent,            mgd_oop_parent_get,    NULL)
-
-#define MIDGARD_OOP_ATTACHMENT_METHODS \
-   PHP_FALIAS(getattachment,     mgd_get_attachment,        NULL) \
-   PHP_FALIAS(createattachment,  mgd_oop_attachment_create, NULL) \
-   PHP_FALIAS(listattachments,   mgd_oop_attachment_list,   NULL) \
-   PHP_FALIAS(openattachment,    mgd_open_attachment,       NULL) \
-   PHP_FALIAS(serveattachment,   mgd_serve_attachment,      NULL) \
-   PHP_FALIAS(deleteattachment,  mgd_delete_attachment,     NULL) \
-   PHP_FALIAS(updateattachment,  mgd_update_attachment,     NULL)
-
-#define MIDGARD_OOP_PARAMETER_METHODS \
-	PHP_FALIAS(parameter,         mgd_oop_parameter,         NULL) \
-	PHP_FALIAS(searchparameters,  mgd_oop_parameter_search,  NULL) \
-	PHP_FALIAS(listparameters,    mgd_oop_parameter_list,    NULL)
-
-#define MIDGARD_CLASS(name,table,constructor,functions) \
-static zend_function_entry name ## Methods[] = \
-   { \
-      PHP_FALIAS(constructor, mgd_get_ ## functions ,    NULL) \
-      PHP_FALIAS(create,      mgd_create_ ## functions , NULL) \
-      PHP_FALIAS(update,      mgd_update_ ## functions , NULL) \
-      PHP_FALIAS(delete,      mgd_delete_ ## functions , NULL) \
-      PHP_FALIAS(fetch,       mgd_oop_list_fetch,        NULL) \
-      MIDGARD_OOP_ATTACHMENT_METHODS \
-      MIDGARD_OOP_SITEGROUP_METHODS \
-      MIDGARD_OOP_PARAMETER_METHODS \
-      {NULL, NULL, NULL} \
-   }; \
-MidgardClass name = { \
-   #name, \
-   #table, \
-   name ## Methods, \
-   {}, \
-   NULL \
-};
-
-#else 
-
 #define MIDGARD_CLASS(name,table,constructor,functions) \
 static zend_function_entry name ## Methods[] = \
    { \
@@ -270,8 +196,6 @@ MidgardClass name = { \
    {}, \
    NULL \
 };
-#endif /* PHP_MIDGARD_LEGACY_API */ 
-
 
 #endif
 #if HAVE_MIDGARD_MULTILANG

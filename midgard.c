@@ -72,7 +72,6 @@ zend_object_handlers php_midgard_gobject_handlers;
 guint global_loghandler = 0;
 /* End of true globals */
 
-#ifndef PHP_MIDGARD_LEGACY_API
 php_midgard_function_entry midgard_functions[] = {
 PHP_FE(mgd_get_midgard, NULL)
 PHP_FE(mgd_preparse, NULL)
@@ -100,352 +99,6 @@ MGD_FE(get_sitegroup, NULL)
 MGD_FE(template, NULL)
 {NULL, NULL, NULL}  /* Must be the last line in midgard_functions[] */
 };
-#else
-MGD_FUNCTION(ret_type, errno, (type param));
-MGD_FUNCTION(ret_type, errstr, (type param));
-MGD_FUNCTION(ret_type, version, (type param));
-#if HAVE_MIDGARD_MULTILANG
-MGD_FUNCTION(ret_type, get_lang, (type param));
-MGD_FUNCTION(ret_type, set_lang, (type param));
-MGD_FUNCTION(ret_type, set_default_lang, (type param));
-MGD_FUNCTION(ret_type, get_default_lang, (type param));
-MGD_FUNCTION(ret_type, set_lang_by_code, (type param));
-MGD_FUNCTION(ret_type, get_parameters_defaultlang, (type param));
-MGD_FUNCTION(ret_type, get_attachments_defaultlang, (type param));
-MGD_FUNCTION(ret_type, set_parameters_defaultlang, (type param));
-MGD_FUNCTION(ret_type, set_attachments_defaultlang, (type param));
-#endif /* HAVE_MIDGARD_MULTILANG */
-MGD_FUNCTION(ret_type, get_midgard, (type param));
-MGD_FUNCTION(ret_type, auth_midgard, (type param));
-MGD_FUNCTION(ret_type, unsetuid, (type param));
-MGD_FUNCTION(ret_type, issetuid, (type param));
-MGD_FUNCTION(ret_type, preparser_active, (type param));
-MGD_FUNCTION(ret_type, debug_start, (type param));
-MGD_FUNCTION(ret_type, debug_stop, (type param));
-MGD_FUNCTION(ret_type, register_style, (type param));
-MGD_FUNCTION(ret_type, register_style_from_dir, (type param));
-MGD_FUNCTION(ret_type, set_style, (type param));
-MGD_FUNCTION(ret_type, set_styledir, (type param));
-MGD_FUNCTION(ret_type, config_init, (type_param));
-
-MGD_FUNCTION(ret_type, is_guid, (type_param));
-
-/* Undocumented */
-MGD_FUNCTION(ret_type, cache_invalidate, (type_param));
-MGD_FUNCTION(ret_type, set_errno, (type_param));
-MGD_FUNCTION(ret_type, reset_errno, (type_param));
-
-/* Every user visible function must have an entry in midgard_functions[].
-*/
-php_midgard_function_entry midgard_functions[] = {
-MGD_FE(is_article_owner, NULL)
-MGD_FE(is_article_in_topic_tree, NULL)
-MGD_FE(list_topic_articles, NULL)
-MGD_FE(list_reply_articles, NULL)
-MGD_FE(list_topic_articles_all, NULL)
-MGD_FE(list_topic_articles_all_fast, NULL)
-MGD_FE(list_topic_articles_all_of_person, NULL)
-MGD_FE(get_article, NULL)
-MGD_FALIAS(get_article_by_name, get_article, NULL)
-MGD_FE(get_reply_by_name, NULL)
-MGD_FE(create_article, NULL)
-#if HAVE_MIDGARD_MULTILANG
-MGD_FE(create_article_content, NULL)
-#endif /* HAVE_MIDGARD_MULTILANG */
-MGD_FE(update_article_score, NULL)
-MGD_FE(update_article_created, NULL)
-MGD_FE(update_article_replyto, NULL)
-MGD_FE(update_article_type, NULL)
-MGD_FE(toggle_article_lock, NULL)
-MGD_FE(approve_article, NULL)
-MGD_FE(update_article, NULL)
-#if HAVE_MIDGARD_MULTILANG
-MGD_FE(update_article_content, NULL)
-#endif /* HAVE_MIDGARD_MULTILANG */
-MGD_FE(delete_article, NULL)
-#if HAVE_MIDGARD_MULTILANG
-MGD_FE(delete_article_content, NULL)
-#endif /* HAVE_MIDGARD_MULTILANG */
-MGD_FE(copy_article, NULL)
-MGD_FE(move_article, NULL)
-MGD_FE(move_reply, NULL)
-MGD_FE(delete_article_tree, NULL)
-MGD_FE(open_attachment, NULL)
-MGD_FE(get_attachment, NULL)
-MGD_FE(serve_attachment, NULL)
-MGD_FE(stat_attachment, NULL)
-MGD_FE(delete_attachment, NULL)
-MGD_FE(update_attachment, NULL)
-//MGD_FE(errno, NULL)
-//MGD_FE(errstr, NULL)
-//MGD_FE(version, NULL)
-MGD_FE(is_topic_owner, NULL)
-MGD_FE(list_topics, NULL)
-MGD_FE(is_in_topic_tree, NULL)
-MGD_FE(get_topic, NULL)
-MGD_FALIAS(get_topic_by_name, get_topic, NULL)
-MGD_FE(create_topic, NULL)
-MGD_FE(update_topic, NULL)
-MGD_FE(update_topic_score, NULL)
-MGD_FE(delete_topic, NULL)
-MGD_FE(copy_topic, NULL)
-MGD_FE(move_topic, NULL)
-MGD_FE(delete_topic_tree, NULL)
-MGD_FE(get_topic_by_path, NULL)
-MGD_FE(list_elements, NULL)
-MGD_FE(get_element, NULL)
-MGD_FALIAS(get_element_by_name, get_element, NULL)
-MGD_FE(create_element, NULL)
-#if HAVE_MIDGARD_MULTILANG
-MGD_FE(create_element_content, NULL)
-#endif /* HAVE_MIDGARD_MULTILANG */
-MGD_FE(update_element, NULL)
-#if HAVE_MIDGARD_MULTILANG
-MGD_FE(update_element_content, NULL)
-#endif /* HAVE_MIDGARD_MULTILANG */
-MGD_FE(delete_element, NULL)
-MGD_FE(delete_element_tree, NULL)
-#if HAVE_MIDGARD_MULTILANG
-MGD_FE(delete_element_content, NULL)
-#endif /* HAVE_MIDGARD_MULTILANG */
-MGD_FE(copy_element, NULL)
-MGD_FE(move_element, NULL)
-MGD_FE(errno, NULL)
-MGD_FE(errstr, NULL)
-MGD_FE(version, NULL)
-MGD_FE(get_midgard, NULL)
-MGD_FE(auth_midgard, NULL)
-MGD_FE(unsetuid, NULL)
-MGD_FE(issetuid, NULL)
-MGD_FE(preparser_active, NULL)
-MGD_FE(is_group_owner, NULL)
-MGD_FE(list_groups, NULL)
-MGD_FE(get_group, NULL)
-MGD_FE(get_group_by_name, NULL)
-MGD_FE(create_group, NULL)
-MGD_FE(update_group, NULL)
-MGD_FE(delete_group, NULL)
-MGD_FE(list_members, NULL)
-MGD_FE(list_memberships, NULL)
-MGD_FE(get_member, NULL)
-MGD_FE(create_member, NULL)
-MGD_FE(update_member, NULL)
-MGD_FE(delete_member, NULL)
-MGD_FE(is_host_owner, NULL)
-MGD_FE(list_hosts, NULL)
-MGD_FE(get_host, NULL)
-MGD_FE(get_host_by_name, NULL)
-MGD_FE(create_host, NULL)
-MGD_FE(update_host, NULL)
-MGD_FE(delete_host, NULL)
-MGD_FE(list_topic_calendar_all, NULL)
-MGD_FE(list_events_by_group, NULL)
-MGD_FE(list_events_between_by_group, NULL)
-MGD_FE(list_events_by_person, NULL)
-MGD_FE(list_events_between_by_person, NULL)
-MGD_FE(list_events_between_by_member, NULL)
-MGD_FE(list_topic_calendar_all_fast, NULL)
-MGD_FE(is_event_owner, NULL)
-MGD_FE(create_event, NULL)
-MGD_FE(update_event, NULL)
-MGD_FE(delete_event, NULL)
-MGD_FE(delete_event_tree, NULL)
-MGD_FE(get_event, NULL)
-MGD_FE(list_events, NULL)
-MGD_FE(list_events_between, NULL)
-MGD_FE(list_events_all, NULL)
-MGD_FE(list_events_all_between, NULL)
-MGD_FE(count_events_in_period, NULL)
-MGD_FE(count_events_in_month, NULL)
-MGD_FE(copy_event, NULL)
-MGD_FE(move_event, NULL)
-MGD_FE(create_event_member, NULL)
-MGD_FE(update_event_member, NULL)
-MGD_FE(delete_event_member, NULL)
-MGD_FE(get_event_member, NULL)
-MGD_FE(list_event_members, NULL)
-#if HAVE_MIDGARD_MULTILANG
-MGD_FE(create_page_content, NULL)
-#endif /* HAVE_MIDGARD_MULTILANG */
-MGD_FE(count_event_members, NULL)
-#if HAVE_MIDGARD_MULTILANG
-MGD_FE(update_page_content, NULL)
-#endif /* HAVE_MIDGARD_MULTILANG */
-MGD_FE(is_page_owner, NULL)
-#if HAVE_MIDGARD_MULTILANG
-MGD_FE(delete_page_content, NULL)
-#endif /* HAVE_MIDGARD_MULTILANG */
-MGD_FE(copy_page, NULL)
-MGD_FE(move_page, NULL)
-MGD_FE(list_pages, NULL)
-MGD_FE(is_in_page_tree, NULL)
-MGD_FE(get_page, NULL)
-MGD_FE(get_page_by_name, NULL)
-MGD_FE(create_page, NULL)
-MGD_FE(update_page, NULL)
-MGD_FE(delete_page, NULL)
-MGD_FE(page_has_children, NULL)
-MGD_FE(delete_page_tree, NULL)
-MGD_FE(list_page_elements, NULL)
-MGD_FE(get_page_element, NULL)
-MGD_FE(get_page_element_by_name, NULL)
-MGD_FE(create_page_element, NULL)
-#if HAVE_MIDGARD_MULTILANG
-MGD_FE(create_page_element_content, NULL)
-#endif /* HAVE_MIDGARD_MULTILANG */
-MGD_FE(update_page_element, NULL)
-#if HAVE_MIDGARD_MULTILANG
-MGD_FE(update_page_element_content, NULL)
-#endif /* HAVE_MIDGARD_MULTILANG */
-MGD_FE(delete_page_element, NULL)
-MGD_FE(delete_page_element_tree, NULL)
-#if HAVE_MIDGARD_MULTILANG
-MGD_FE(delete_page_element_content, NULL)
-#endif /* HAVE_MIDGARD_MULTILANG */
-MGD_FE(copy_page_element, NULL)
-MGD_FE(move_page_element, NULL)
-MGD_FE(has_pagelinks, NULL)
-#if HAVE_MIDGARD_PAGELINKS
-MGD_FE(is_pagelink_owner, NULL)
-MGD_FE(list_pagelinks, NULL)
-MGD_FE(list_pagelinks_targeted_at, NULL)
-MGD_FE(get_pagelink, NULL)
-MGD_FE(get_pagelink_by_name, NULL)
-MGD_FE(create_pagelink, NULL)
-MGD_FE(update_pagelink, NULL)
-MGD_FE(delete_pagelink, NULL)
-#endif
-MGD_FE(is_person_owner, NULL)
-MGD_FE(is_member, NULL)
-MGD_FE(list_persons, NULL)
-MGD_FE(list_persons_in_department, NULL)
-MGD_FALIAS(list_topic_persons, list_persons_in_department, NULL)
-MGD_FE(list_persons_in_department_all, NULL)
-MGD_FALIAS(list_topic_persons_all, list_persons_in_department_all, NULL)
-MGD_FE(list_persons_in_office, NULL)
-MGD_FE(get_person, NULL)
-MGD_FE(get_person_by_name, NULL)
-MGD_FE(create_person, NULL)
-MGD_FE(update_person, NULL)
-MGD_FE(update_password, NULL)
-MGD_FE(update_password_plain, NULL)
-MGD_FE(update_public, NULL)
-MGD_FE(delete_person, NULL)
-MGD_FE(has_sitegroups, NULL)
-MGD_FE(list_sitegroups, NULL)
-MGD_FE(create_sitegroup, NULL)
-MGD_FE(get_sitegroup, NULL)
-MGD_FE(update_sitegroup, NULL)
-MGD_FE(delete_sitegroup, NULL)
-MGD_FE(snippet_exists, NULL)
-MGD_FE(list_snippets, NULL)
-MGD_FE(get_snippet, NULL)
-MGD_FE(get_snippet_by_name, NULL)
-MGD_FE(create_snippet, NULL)
-#if HAVE_MIDGARD_MULTILANG
-MGD_FE(create_snippet_content, NULL)
-#endif /* HAVE_MIDGARD_MULTILANG */
-MGD_FE(update_snippet, NULL)
-#if HAVE_MIDGARD_MULTILANG
-MGD_FE(update_snippet_content, NULL)
-#endif /* HAVE_MIDGARD_MULTILANG */
-MGD_FE(delete_snippet, NULL)
-#if HAVE_MIDGARD_MULTILANG
-MGD_FE(delete_snippet_content, NULL)
-#endif /* HAVE_MIDGARD_MULTILANG */
-MGD_FE(copy_snippet, NULL)
-MGD_FE(move_snippet, NULL)
-MGD_FE(get_snippet_by_path, NULL)
-MGD_FE(is_snippetdir_owner, NULL)
-MGD_FE(list_snippetdirs, NULL)
-MGD_FE(get_snippetdir, NULL)
-MGD_FE(get_snippetdir_by_path, NULL)
-MGD_FE(create_snippetdir, NULL)
-MGD_FE(update_snippetdir, NULL)
-MGD_FE(delete_snippetdir, NULL)
-MGD_FE(delete_snippetdir_tree, NULL)
-MGD_FE(copy_snippetdir, NULL)
-MGD_FE(move_snippetdir, NULL)
-MGD_FE(walk_style_tree, NULL)
-MGD_FE(walk_topic_tree, NULL)
-MGD_FE(walk_article_tree, NULL)
-MGD_FE(walk_page_tree, NULL)
-MGD_FE(walk_snippetdir_tree, NULL)
-MGD_FE(walk_event_tree, NULL)
-MGD_FE(walk_group_tree, NULL)
-MGD_FE(is_style_owner, NULL)
-MGD_FE(set_lang, NULL)
-MGD_FE(set_parameters_defaultlang, NULL)
-MGD_FE(set_attachments_defaultlang, NULL)
-MGD_FE(set_lang_by_code, NULL)
-MGD_FE(get_lang, NULL)
-MGD_FE(get_default_lang, NULL)
-MGD_FE(set_default_lang, NULL)
-MGD_FE(get_parameters_defaultlang, NULL)
-MGD_FE(get_attachments_defaultlang, NULL)
-MGD_FE(list_styles, NULL)
-MGD_FE(get_style, NULL)
-MGD_FE(get_style_by_name, NULL)
-MGD_FE(create_style, NULL)
-MGD_FE(update_style, NULL)
-MGD_FE(delete_style, NULL)
-MGD_FE(copy_style, NULL)
-MGD_FE(move_style, NULL)
-MGD_FE(delete_style_tree, NULL)
-#if HAVE_MIDGARD_MULTILANG
-MGD_FE(has_multilang, NULL)
-MGD_FE(list_languages, NULL)
-MGD_FE(get_language, NULL)
-MGD_FE(get_language_by_code, NULL)
-MGD_FE(create_language, NULL)
-MGD_FE(update_language, NULL)
-MGD_FE(delete_language, NULL)
-#endif /* HAVE_MIDGARD_MULTILANG */
-#if HAVE_MIDGARD_QUOTA
-MGD_FE(list_quotas, NULL)
-MGD_FE(get_quota, NULL)
-MGD_FE(get_quota_by_tablename, NULL)
-MGD_FE(get_quota_info_by_tablename, NULL)
-MGD_FE(create_quota, NULL)
-MGD_FE(update_quota, NULL)
-MGD_FE(delete_quota, NULL)
-MGD_FE(get_sitegroup_size, NULL)
-#endif /* HAVE_MIDGARD_QUOTA */
-MGD_FE(get_object_by_guid, NULL)
-#if HAVE_MIDGARD_MULTILANG
-MGD_FE(get_object_by_guid_all_langs, NULL)
-MGD_FE(is_owner_by_guid, NULL)
-#endif /* HAVE_MIDGARD_MULTILANG */
-
-/* preparser functions */
-MGD_FE(snippet, NULL)
-MGD_FE(ref, NULL)
-MGD_FE(preparse, NULL)
-MGD_FE(format, NULL)
-MGD_FE(template, NULL)
-
-#if MIDGARD_142MOD
-MGD_FE(eval, NULL)
-MGD_FE(variable, NULL)
-#endif
-
-MGD_FE(debug_start, NULL)
-MGD_FE(debug_stop, NULL)
-MGD_FE(register_style, NULL)
-MGD_FE(register_style_from_dir, NULL)
-MGD_FE(set_style, NULL)
-MGD_FE(set_styledir, NULL)
-MGD_FE(is_element_loaded, NULL)
-MGD_FE(config_init, NULL)
-MGD_FE(is_guid, NULL)
-
-/* Undocumented */
-MGD_FE(cache_invalidate, NULL)
-MGD_FE(set_errno, NULL)
-MGD_FE(reset_errno, NULL)
-    {NULL, NULL, NULL}  /* Must be the last line in midgard_functions[] */
-};
-#endif
 
 void php_midgard_log_errors(const gchar *domain, GLogLevelFlags level,
 		const gchar *msg, gpointer userdata)
@@ -703,7 +356,6 @@ PHP_MINIT_FUNCTION(midgard)
 		zend_register_list_destructors_ex(_midgard_list_fetch_dtor, NULL,
 				"midgard list fetch", module_number);
 	
-//#ifdef PHP_MIDGARD_LEGACY_API
 	for (midgard_class = MidgardClasses; midgard_class &&
 			*midgard_class; midgard_class++) {
 		if(*midgard_class && (*midgard_class)->name) {
@@ -720,7 +372,6 @@ PHP_MINIT_FUNCTION(midgard)
 			assert((*midgard_class)->entry_ptr);
 		}
 	}
-//#endif
 	
 	midgard_init();
 
@@ -1058,11 +709,7 @@ PHP_MINFO_FUNCTION(midgard)
     */
 }
 
-#ifdef PHP_MIDGARD_LEGACY_API
-MGD_FUNCTION(ret_type, config_init, (type_param))
-#else
 PHP_FUNCTION(mgd_config_init)
-#endif
 {
 	gchar *conf;
 	gint conf_length;
@@ -1084,11 +731,7 @@ PHP_FUNCTION(mgd_config_init)
 	/* TODO , open connection here if really needed for some backward compatibility */
 }
 
-#ifdef PHP_MIDGARD_LEGACY_API
-MGD_FUNCTION(ret_type, errno, (type param))
-#else
 PHP_FUNCTION(mgd_errno)
-#endif
 {
 	RETVAL_FALSE;
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "") != SUCCESS) {
@@ -1105,11 +748,7 @@ PHP_FUNCTION(mgd_errno)
 	RETURN_LONG(mgd->_mgd->errnum);
 }
 
-#ifdef PHP_MIDGARD_LEGACY_API
-MGD_FUNCTION(ret_type, errstr, (type param))
-#else
 PHP_FUNCTION(mgd_errstr)
-#endif
 {
 	RETVAL_FALSE;
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "") != SUCCESS) {
@@ -1128,11 +767,7 @@ PHP_FUNCTION(mgd_errstr)
 	RETURN_STRING(mgd->_mgd->errstr, 1);
 }
 
-#ifdef PHP_MIDGARD_LEGACY_API
-MGD_FUNCTION(ret_type, version, (type param))
-#else
 PHP_FUNCTION(mgd_version)
-#endif
 {
    RETURN_STRING((char*)mgd_version(), 1);
 }
@@ -1203,11 +838,7 @@ int is_table_multilang(const char *table) {
     }
 }
 
-#ifdef PHP_MIDGARD_LEGACY_API
-MGD_FUNCTION(ret_type, get_midgard, (type param))
-#else
 PHP_FUNCTION(mgd_get_midgard)
-#endif
 {
     int i;
     char *ah_prefix;
@@ -1278,11 +909,7 @@ PHP_FUNCTION(mgd_get_midgard)
     add_property_zval(return_value, "types", types);
     
 }
-#ifdef PHP_MIDGARD_LEGACY_API
-MGD_FUNCTION(ret_type, auth_midgard, (type param))
-#else 
 PHP_FUNCTION(mgd_auth_midgard)
-#endif
 {
 	gchar *username, *password;
 	guint namel, passl;
@@ -1386,11 +1013,8 @@ zval *hostname, *database, *username, *password;
 
    MGDG(mgd) = mgd_connect(Z_STRVAL_P(hostname), Z_STRVAL_P(database), Z_STRVAL_P(username), Z_STRVAL_P(password));
 }
-#ifdef PHP_MIDGARD_LEGACY_API
-MGD_FUNCTION(ret_type, unsetuid, (type param))
-#else
+
 PHP_FUNCTION(mgd_unsetuid)
-#endif
 {
     midgard_request_config *rcfg = mgd_rcfg();
     midgard *mgd = mgd_handle();
@@ -1427,11 +1051,7 @@ PHP_FUNCTION(mgd_unsetuid)
     RETURN_LONG(mua);
 }
 
-#ifdef PHP_MIDGARD_LEGACY_API
-MGD_FUNCTION(ret_type, issetuid, (type param))
-#else
 PHP_FUNCTION(mgd_issetuid)
-#endif
 {
     if (ZEND_NUM_ARGS() != 0) { WRONG_PARAM_COUNT; }
 
@@ -1490,11 +1110,7 @@ int midgard_user_call_func(midgard *mgd, int id, int level, void *xparam)
 
 #if HAVE_MIDGARD_MULTILANG
 
-#ifdef PHP_MIDGARD_LEGACY_API
-MGD_FUNCTION(ret_type, set_lang, (type param))
-#else
 PHP_FUNCTION(mgd_set_lang)
-#endif
 {
     zval *lang;
     zval **hash, **vkey; /* Used in _MIDGARD_UPDATE_LONG */
@@ -1516,11 +1132,7 @@ PHP_FUNCTION(mgd_set_lang)
     RETURN_TRUE;
 }
 
-#ifdef PHP_MIDGARD_LEGACY_API
-MGD_FUNCTION(ret_type, set_default_lang, (type_param))
-#else
 PHP_FUNCTION(mgd_set_default_lang)
-#endif
 {
 	CHECK_MGD;
 	RETVAL_FALSE;
@@ -1535,11 +1147,7 @@ PHP_FUNCTION(mgd_set_default_lang)
 	RETVAL_TRUE;
 }
 
-#ifdef PHP_MIDGARD_LEGACY_API
-MGD_FUNCTION(ret_type, get_default_lang, (type_param))
-#else
 PHP_FUNCTION(mgd_get_default_lang)
-#endif
 {
 	CHECK_MGD;
 	RETVAL_FALSE;
@@ -1615,11 +1223,7 @@ MGD_FUNCTION(ret_type, set_attachments_defaultlang, (type param))
     RETURN_TRUE;
 }
 
-#ifdef PHP_MIDGARD_LEGACY_API
-MGD_FUNCTION(ret_type, get_lang, (type param))
-#else
 PHP_FUNCTION(mgd_get_lang)
-#endif
 {
     RETURN_LONG(mgd_lang(mgd_handle()));
 }
@@ -1638,11 +1242,7 @@ MGD_FUNCTION(ret_type, get_attachments_defaultlang, (type param))
 
 #endif /* HAVE_MIDGARD_MULTILANG */
 
-#ifdef PHP_MIDGARD_LEGACY_API
-MGD_FUNCTION(ret_type, debug_start, (type param))
-#else
 PHP_FUNCTION(mgd_debug_start)
-#endif
 {	
 	MidgardConnection *mgd = mgd_handle_singleton_get();
 
@@ -1655,12 +1255,7 @@ PHP_FUNCTION(mgd_debug_start)
 	midgard_connection_set_loglevel(mgd, "debug", php_midgard_log_errors);
 }
 
-#ifdef PHP_MIDGARD_LEGACY_API
-MGD_FUNCTION(ret_type, debug_stop, (type param))
-#else
 PHP_FUNCTION(mgd_debug_stop)
-#endif
-
 {
 	midgard *mgd = mgd_handle();
 	
@@ -1831,11 +1426,7 @@ MGD_FUNCTION(ret_type, register_style_from_dir, (type param))
  * This is midcom related. 
  * I define quiet parameter as 2 , in any other case it's not quiet.
  * I have no idea if it's hack like, but it works as expected */
-#ifdef PHP_MIDGARD_LEGACY_API
-MGD_FUNCTION(ret_type, is_guid, (type param))
-#else
 PHP_FUNCTION(mgd_is_guid)
-#endif
 {
 	gchar *guid;
 	guint guidl;

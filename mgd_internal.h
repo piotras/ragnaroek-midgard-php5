@@ -39,16 +39,6 @@ extern int le_midgard_list_fetch;
 #define RETURN_FALSE_BECAUSE(reason) { mgd_set_errno(reason); RETURN_FALSE; }
 #define RETVAL_FALSE_BECAUSE(reason) { mgd_set_errno(reason); RETVAL_FALSE; }
 
-#ifdef PHP_MIDGARD_LEGACY_API
-#define MGD_FUNCTION(ret, name, param) \
-   PHP_FUNCTION(mgd_##name)
-
-#define MGD_FE(name, arg_types) \
-   PHP_FE(mgd_##name, arg_types)
-
-#define MGD_FALIAS(name, handler, arg_types) \
-   PHP_FALIAS(mgd_##name, mgd_##handler, arg_types)
-#else 
 #define MGD_FUNCTION(ret, name, param) \
    PHP_FUNCTION(mgd_##name)
 
@@ -57,7 +47,6 @@ extern int le_midgard_list_fetch;
 
 #define MGD_FALIAS(name, handler, arg_types) \
    PHP_FALIAS(mgd_##name, _mgd_##handler, arg_types)
-#endif /* PHP_MIDGARD_LEGACY_API */
 
 #define MGD_PROPFIND(object, prop, retval) \
    (zend_hash_find(Z_OBJPROP_P(object), (prop), strlen(prop)+1, (void**)&(retval)) == SUCCESS)
