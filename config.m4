@@ -84,4 +84,4 @@ CFLAGS="$CFLAGS -Wall -fno-strict-aliasing"
 
 AC_DEFINE(HAVE_MIDGARD, 1, [ ])
 PHP_SUBST(MIDGARD_SHARED_LIBADD)
-PHP_NEW_EXTENSION(midgard, midgard.c preparser.c preparse.c query_builder.c php_midgard_reflection_property.c php_midgard_collector.c php_midgard_object_parameter.c php_midgard_object_attachment.c php_midgard_config.c php_midgard_gobject_generic.c php_midgard_blob.c php_midgard_object.c php_midgard_object_class.c php_midgard_connection.c attachment.c oop.c pagelink.c sitegroup.c php_midgard_replicator.c php_midgard_user.c php_midgard_dbus.c php_midgard_sitegroup.c, $ext_shared)
+PHP_NEW_EXTENSION(midgard, midgard.c preparser.c preparse.c query_builder.c php_midgard_reflection_property.c php_midgard_collector.c php_midgard_object_parameter.c php_midgard_object_attachment.c php_midgard_config.c php_midgard_gobject_generic.c php_midgard_blob.c php_midgard_object.c php_midgard_object_class.c php_midgard_connection.c attachment.c oop.c sitegroup.c php_midgard_replicator.c php_midgard_user.c php_midgard_dbus.c php_midgard_sitegroup.c, $ext_shared)
