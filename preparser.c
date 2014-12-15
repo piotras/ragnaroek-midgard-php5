@@ -262,6 +262,8 @@ MGD_FUNCTION(ret_type, variable, (type param))
 
 #endif /* MIDGARD_142MOD */
 
+#if MIDGARD_142MOD
+
 MGD_FUNCTION(ret_type, eval, (type param))
 {
  	zval *string, *name;
