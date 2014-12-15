@@ -31,7 +31,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef HAVE_MGD_INTERNAL_H
 #define HAVE_MGD_INTERNAL_H
 
-const char *article_sort(const char *order);
 extern int le_midgard_list_fetch;
 
 #define php_rqst    ((request_rec *) SG(server_context))
@@ -56,20 +55,19 @@ extern int le_midgard_list_fetch;
       (void**)&(retval)) == SUCCESS)
 
 #define IDINIT \
-   int id; zval *self, **id_zval; \
+   int id; zval *self, *id_zval; \
    if (!mgd_handle()) \
       RETURN_FALSE_BECAUSE(MGD_ERR_NOT_CONNECTED); \
    if ((self = getThis()) != NULL) { \
-      if (! MGD_PROPFIND(self, "id", id_zval)) { \
+      if (! MGD_PROPFIND(self, "id", &id_zval)) { \
          RETURN_FALSE_BECAUSE(MGD_ERR_INVALID_OBJECT); \
       } \
    } else { \
       if (ZEND_NUM_ARGS() != 1 \
-            || zend_parse_parameters(1 TSRMLS_CC, "z", id_zval) != SUCCESS) \
+            || zend_parse_parameters(1 TSRMLS_CC, "l", &id_zval) != SUCCESS) \
       WRONG_PARAM_COUNT; \
    } \
-   convert_to_long_ex(id_zval); \
-   id = Z_LVAL_PP(id_zval);
+   id = Z_LVAL_P(id_zval);
 
 #define PHP_CREATE_REPLIGARD(table,id)
 #define PHP_CREATE_REPLIGARD_VOID(table,id)
@@ -361,7 +359,7 @@ extern int midgard_user_call_func(midgard *mgd, int id, int level, void * xparam
 	if (!MGD_PROPFIND(getThis(), "sitegroup" , sitegroup_property)) {} \
 	current_sitegroup = mgd_handle()->current_user->sitegroup; \
 	convert_to_long_ex(sitegroup_property); \
-	mgd_handle()->current_user->sitegroup = (*sitegroup_property)->value.lval;
+	mgd_handle()->current_user->sitegroup = Z_LVAL_PP(sitegroup_property);
 
 #define _MGD_SITEGROUP_FORCE_REVERT() \
 	mgd_handle()->current_user->sitegroup = current_sitegroup;
