@@ -32,23 +32,22 @@ void mgd_object_init(zval *obj, ...)
 	char *propname;
 	TSRMLS_FETCH();
 
-   va_start(args, obj);
-   while ((propname = va_arg(args, charp)) != NULL) {
-      add_property_unset(obj, propname);
-   }
-   va_end(args);
+   	va_start(args, obj);
+   	while ((propname = va_arg(args, charp)) != NULL) {
+      		add_property_unset(obj, propname);
+   	}
+   	va_end(args);
 }
 
 void php_midgard_bless(zval *object, MidgardClass *species)
 {
-  TSRMLS_FETCH();
-  
-   if (species->entry_ptr == NULL) {
-      fprintf(stderr,
-         "SEVERE: No PHP class entry pointer for Midgard class '%s'\n",
-            species->name);
-      return;
-   }
+	TSRMLS_FETCH();
+
+	if (species->entry_ptr == NULL) {
+		fprintf(stderr, "SEVERE: No PHP class entry pointer for Midgard class '%s'\n", species->name);
+		return;
+	}
+
 	object_init_ex(object, species->entry_ptr);
 	php_midgard_ctor(object, species);
 }
@@ -83,16 +82,14 @@ void php_midgard_ctor(zval *object, MidgardClass *species)
 
 void php_midgard_bless_oop(zval *object, MidgardClass *species)
 {
-  TSRMLS_FETCH();
-
-   if (species->entry_ptr == NULL) {
-      fprintf(stderr,
-         "SEVERE: No PHP class entry pointer for Midgard class '%s'\n",
-            species->name);
-      return;
-   }
-
-   object_init_ex(object, species->entry_ptr);
+	TSRMLS_FETCH();
+	
+	if (species->entry_ptr == NULL) {
+		fprintf(stderr, "SEVERE: No PHP class entry pointer for Midgard class '%s'\n", species->name);
+		return;
+	}
+	
+	object_init_ex(object, species->entry_ptr);
 
 	add_property_string(object, "__table__", (char*)species->table, 1);
 	add_property_string(object, "guid", "", 1);
@@ -106,15 +103,10 @@ void php_midgard_delete(zval * return_value, const char *table, int id)
 	CHECK_MGD;
 
 	if (mgd_delete(mgd_handle(), table, id)) {
-      RETURN_TRUE;
-   }
-
-   RETVAL_FALSE_BECAUSE(MGD_ERR_INTERNAL);
-
-   /* EEH: TODO: log_error(
-      "Midgard: delete of %s %d failed",
-         table ? table : "<null class>", id);
-   */
+		RETURN_TRUE;
+	}
+	
+	RETVAL_FALSE_BECAUSE(MGD_ERR_INTERNAL);
 }
 
 void php_midgard_delete_repligard(const char *table, int id)
@@ -133,24 +125,19 @@ void php_midgard_update(zval * return_value, const char *table,
 	TSRMLS_FETCH();
 	CHECK_MGD;
 
-   va_start(args, id);
+   	va_start(args, id);
 	if ((ret = mgd_vupdate(mgd_handle(), table, id, fields, args)) > 0) {
-      RETVAL_TRUE;
-   }
-   else {
+		RETVAL_TRUE;
+	}
+	else {
 #if HAVE_MIDGARD_QUOTA
-     if (ret == -64) RETVAL_FALSE_BECAUSE(MGD_ERR_QUOTA)
-     else	  RETVAL_FALSE_BECAUSE(MGD_ERR_INTERNAL);
+	     if (ret == -64) RETVAL_FALSE_BECAUSE(MGD_ERR_QUOTA)
+	     else	  RETVAL_FALSE_BECAUSE(MGD_ERR_INTERNAL);
 #else
-	  RETVAL_FALSE_BECAUSE(MGD_ERR_INTERNAL);
+	     RETVAL_FALSE_BECAUSE(MGD_ERR_INTERNAL);
 #endif
-      /* EEH: TODO: log_error(
-         "Midgard: update of %s %d failed",
-            table ? table : "<null class>", id);
-      */
-   }
-
-   va_end(args);
+	}
+	va_end(args);
 }
 
 void php_midgard_create(zval * return_value, zval * self, const char *table,
@@ -197,11 +184,11 @@ void php_midgard_select(MidgardClass *species, zval * return_value,
 				 args);
 	va_end(args);
 	if (res) {
-    /* 
-     * ZEND_REGISTER_RESOURCE(return_value,res,le_midgard_list_fetch);
-     * PP: I do not know if return_value may be used as resource property.
-     * Anyway It is good to register resource before inserting it to Zend resources list */
-    res_id = zend_list_insert(res, le_midgard_list_fetch);
+		/* 
+		 * ZEND_REGISTER_RESOURCE(return_value,res,le_midgard_list_fetch);
+		 * PP: I do not know if return_value may be used as resource property.
+		 * Anyway It is good to register resource before inserting it to Zend resources list */
+		res_id = zend_list_insert(res, le_midgard_list_fetch);
 		php_midgard_bless_oop(return_value, species);
 		add_property_long(return_value, "N", mgd_rows(res));
 		add_property_resource(return_value, "__res__", res_id);
@@ -413,65 +400,6 @@ MGD_FUNCTION(ret_type, oop_parent_get, (type param))
   php_midgard_get_object(return_value, table, id);
 }
 
-MGD_FUNCTION(ret_type, oop_list_fetch, (type param))
-{
-	zval *self;
-	zval **key;
-	midgard_res *res;
-	char *name, *value;
-   int i;
-
-	CHECK_MGD;
-    RETVAL_FALSE;
-
-	self = getThis();
-	if (self == NULL) {
-        RETURN_FALSE_BECAUSE(MGD_ERR_NOT_OBJECT);
-    }
-
-    if (!MGD_PROPFIND(self, "__res__", key)) {
-        RETURN_FALSE_BECAUSE(MGD_ERR_NOT_EXISTS);
-    }
-
-    
-   /* PP: Just commented now. Remove if FETCH macro' stability is proven 
-    * res = (midgard_res*) zend_fetch_resource(key, -1,
-    *  "midgard list fetch", NULL, 1, le_midgard_list_fetch); 
-    */ 
-  
-   ZEND_FETCH_RESOURCE(res, midgard_res *, key, -1, "midgard list fetch" , le_midgard_list_fetch); 
-  
-   if (res == NULL) {
-      RETURN_FALSE_BECAUSE(MGD_ERR_NOT_EXISTS);
-   }
-
-   if (mgd_fetch(res)) {
-      for (i = 0; i < mgd_cols(res); i++) {
-         name = (char*)mgd_colname(res, i);
-			value = (char *)mgd_colvalue(res, i);
-			if (value == NULL ) {
-				value = "";
-			}
-
-         char *value_end;
-         long long_value = strtol(value, &value_end, 10);
-         if (value_end != value && *value_end == '\0' &&
-			 (!g_str_equal((char*)mgd_colname(res, i), "name"))) {
-            add_property_long(self, name, long_value);
-         } else {
-			   add_property_string(self, name, (char *)value, 1);
-         }
-		}
-      RETVAL_TRUE;
-   } else {
-       /* EEH: this should take care of destruction automatically */
-       /* PP: list_delete commented as we must follow ZEND RESOURCES */
-       //zend_list_delete((*key)->value.lval);
-       zend_hash_del(Z_OBJPROP_P(self), "__res__", 8);
-       
-       RETURN_FALSE_BECAUSE(MGD_ERR_NOT_EXISTS);
-   }
-}
 
 void php_midgard_get_object(zval *return_value, int table, int id)
 {

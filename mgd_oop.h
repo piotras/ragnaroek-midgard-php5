@@ -39,92 +39,12 @@ MGD_FUNCTION(ret_type, update_attachment, (type param));
 MGD_FUNCTION(ret_type, oop_guid_get, (type param));
 MGD_FUNCTION(ret_type, oop_parent_get, (type param));
 
-MGD_FUNCTION(ret_type, oop_list_fetch, (type param));
-
-// DG: are all these oop_xxxx_create functions actually exist ?
-MGD_FUNCTION(ret_type, oop_element_create, (type param));
-MGD_FUNCTION(ret_type, delete_element, (type param));
-MGD_FUNCTION(ret_type, update_element, (type param));
-
-MGD_FUNCTION(ret_type, oop_group_create, (type param));
-MGD_FUNCTION(ret_type, delete_group, (type param));
-MGD_FUNCTION(ret_type, update_group, (type param));
-
-MGD_FUNCTION(ret_type, oop_article_create, (type param));
-MGD_FUNCTION(ret_type, oop_article_score, (type param));
-MGD_FUNCTION(ret_type, delete_article, (type param));
-MGD_FUNCTION(ret_type, update_article, (type param));
-
-MGD_FUNCTION(ret_type, oop_topic_create, (type param));
-MGD_FUNCTION(ret_type, oop_topic_score, (type param));
-MGD_FUNCTION(ret_type, delete_topic, (type param));
-MGD_FUNCTION(ret_type, update_topic, (type param));
-
-MGD_FUNCTION(ret_type, oop_file_create, (type param));
-MGD_FUNCTION(ret_type, delete_file, (type param));
-MGD_FUNCTION(ret_type, update_file, (type param));
-
-MGD_FUNCTION(ret_type, oop_host_create, (type param));
-MGD_FUNCTION(ret_type, delete_host, (type param));
-MGD_FUNCTION(ret_type, update_host, (type param));
-
-MGD_FUNCTION(ret_type, oop_image_create, (type param));
-MGD_FUNCTION(ret_type, delete_image, (type param));
-MGD_FUNCTION(ret_type, update_image, (type param));
-
-MGD_FUNCTION(ret_type, oop_member_create, (type param));
-MGD_FUNCTION(ret_type, delete_member, (type param));
-MGD_FUNCTION(ret_type, update_member, (type param));
-
-MGD_FUNCTION(ret_type, oop_person_create, (type param));
-MGD_FUNCTION(ret_type, delete_person, (type param));
-MGD_FUNCTION(ret_type, update_person, (type param));
-
-MGD_FUNCTION(ret_type, oop_page_create, (type param));
-MGD_FUNCTION(ret_type, delete_page, (type param));
-MGD_FUNCTION(ret_type, update_page, (type param));
-
-#if HAVE_MIDGARD_QUOTA
-MGD_FUNCTION(ret_type, oop_quota_create, (type param));
-MGD_FUNCTION(ret_type, delete_quota, (type param));
-MGD_FUNCTION(ret_type, update_quota, (type param));
-#endif
-
-#if HAVE_MIDGARD_PAGELINKS
-MGD_FUNCTION(ret_type, oop_pagelink_create, (type param));
-MGD_FUNCTION(ret_type, delete_pagelink, (type param));
-MGD_FUNCTION(ret_type, update_pagelink, (type param));
-#endif
-
-MGD_FUNCTION(ret_type, oop_event_create, (type param));
-MGD_FUNCTION(ret_type, delete_event, (type param));
-MGD_FUNCTION(ret_type, update_event, (type param));
-MGD_FUNCTION(ret_type, oop_event_member_create, (type param));
-MGD_FUNCTION(ret_type, delete_event_member, (type param));
-MGD_FUNCTION(ret_type, update_event_member, (type param));
-
 MGD_FUNCTION(ret_type, oop_sitegroup_set, (type param));
 MGD_FUNCTION(ret_type, oop_sitegroup_get, (type param));
 
 MGD_FUNCTION(ret_type, create_sitegroup, (type param));
 MGD_FUNCTION(ret_type, delete_sitegroup, (type param));
 MGD_FUNCTION(ret_type, update_sitegroup, (type param));
-
-MGD_FUNCTION(ret_type, oop_style_create, (type param));
-MGD_FUNCTION(ret_type, delete_style, (type param));
-MGD_FUNCTION(ret_type, update_style, (type param));
-
-MGD_FUNCTION(ret_type, oop_pageelement_create, (type param));
-MGD_FUNCTION(ret_type, delete_pageelement, (type param));
-MGD_FUNCTION(ret_type, update_pageelement, (type param));
-
-MGD_FUNCTION(ret_type, oop_snippetdir_create, (type param));
-MGD_FUNCTION(ret_type, delete_snippetdir, (type param));
-MGD_FUNCTION(ret_type, update_snippetdir, (type param));
-
-MGD_FUNCTION(ret_type, oop_snippet_create, (type param));
-MGD_FUNCTION(ret_type, delete_snippet, (type param));
-MGD_FUNCTION(ret_type, update_snippet, (type param));
 
 MGD_FUNCTION(ret_type, get_object_by_guid, (type param));
 #if HAVE_MIDGARD_MULTILANG
@@ -186,8 +106,7 @@ static zend_function_entry name ## Methods[] = \
       PHP_FALIAS(create,      mgd_create_ ## functions , NULL) \
       PHP_FALIAS(update,      mgd_update_ ## functions , NULL) \
       PHP_FALIAS(delete,      mgd_delete_ ## functions , NULL) \
-      PHP_FALIAS(fetch,       mgd_oop_list_fetch,        NULL) \
-      {NULL, NULL, NULL} \
+     {NULL, NULL, NULL} \
    }; \
 MidgardClass name = { \
    #name, \

@@ -53,19 +53,20 @@ extern int le_midgard_list_fetch;
       (void**)&(retval)) == SUCCESS)
 
 #define IDINIT \
-   int id; zval *self, *id_zval; \
+   int id; zval *self, **id_zval; \
+   long id_value; \
    if (!mgd_handle()) \
       RETURN_FALSE_BECAUSE(MGD_ERR_NOT_CONNECTED); \
    if ((self = getThis()) != NULL) { \
-      if (! MGD_PROPFIND(self, "id", &id_zval)) { \
+      if (! MGD_PROPFIND(self, "id", id_zval)) { \
          RETURN_FALSE_BECAUSE(MGD_ERR_INVALID_OBJECT); \
       } \
    } else { \
       if (ZEND_NUM_ARGS() != 1 \
-            || zend_parse_parameters(1 TSRMLS_CC, "l", &id_zval) != SUCCESS) \
+            || zend_parse_parameters(1 TSRMLS_CC, "l", &id_value) != SUCCESS) \
       WRONG_PARAM_COUNT; \
    } \
-   id = Z_LVAL_P(id_zval);
+   id = id_value;
 
 #define PHP_CREATE_REPLIGARD(table,id)
 #define PHP_CREATE_REPLIGARD_VOID(table,id)
@@ -85,15 +86,6 @@ extern int midgard_user_call_func(midgard *mgd, int id, int level, void * xparam
 */
 
 #define SITEGROUP_SELECT ",sitegroup"
-
-
-/* DG: fixing an incompatibility with a certain state of PHP's CVS...
- * not needed anymore, but who knows...
-#ifdef add_property_unset
-#undef add_property_unset
-#define add_property_unset(__arg, __key) add_property_unset_ex(__arg, __key, strlen(__key) + 1)
-#endif
-*/
 
 #define MGD_INIT_CLASS_ENTRY(class_container, class_name, functions) \
 	{ \
