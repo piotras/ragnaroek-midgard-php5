@@ -262,85 +262,6 @@ MGD_FUNCTION(ret_type, variable, (type param))
 
 #endif /* MIDGARD_142MOD */
 
-/* DG {HACK ALERT}: Since the function zend_eval_string does not behave like
- * the statement eval(), thie following function is the exact copy of the
- * function zend_eval_string with some lines commented out.
- * This is necessary to keep the compatibility between eval() and mgd_eval()
- */
-static int mgd_eval_string(char *str, zval *retval_ptr, char *string_name CLS_DC ELS_DC)
-{
-	zval pv;
-	zend_op_array *new_op_array;
-
-  TSRMLS_FETCH();
-  
-	zend_op_array *original_active_op_array = EG(active_op_array);
-	php_mgd_function_state original_function_state_ptr = php_mgd_function_state_ptr();
-	int retval;
-
-//	if (retval_ptr) {
-//		pv.value.str.len = strlen(str)+sizeof("return  ;")-1;
-//		pv.value.str.val = emalloc(pv.value.str.len+1);
-//		strcpy(pv.value.str.val, "return ");
-//		strcat(pv.value.str.val, str);
-//		strcat(pv.value.str.val, " ;");
-//	} else {
-		pv.value.str.len = strlen(str);
-		pv.value.str.val = estrndup(str, pv.value.str.len);
-//	}
-	pv.type = IS_STRING;
-
-#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION < 3
-	int original_handle_op_arrays = CG(handle_op_arrays);
-	CG(handle_op_arrays) = 0;
-#else
-# warning "What should we do here?"
-#endif
-	new_op_array = compile_string(&pv, string_name TSRMLS_CC);
-#if PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION < 3
-	CG(handle_op_arrays) = original_handle_op_arrays;
-#endif
-
-	if (new_op_array) {
-		zval *local_retval_ptr=NULL;
-		zval **original_return_value_ptr_ptr = EG(return_value_ptr_ptr);
-		zend_op **original_opline_ptr = EG(opline_ptr);
-
-		EG(return_value_ptr_ptr) = &local_retval_ptr;
-		EG(active_op_array) = new_op_array;
-		EG(no_extensions)=1;
-
-		zend_execute(new_op_array TSRMLS_CC);
-
-		if (local_retval_ptr) {
-			if (retval_ptr) {
-				COPY_PZVAL_TO_ZVAL(*retval_ptr, local_retval_ptr);
-			} else {
-				zval_ptr_dtor(&local_retval_ptr);
-			}
-		} else {
-			if (retval_ptr) {
-				INIT_ZVAL(*retval_ptr);
-			}
-		}
-
-		EG(no_extensions)=0;
-		EG(opline_ptr) = original_opline_ptr;
-		EG(active_op_array) = original_active_op_array;
-		php_mgd_function_state_ptr() = original_function_state_ptr;
-		destroy_op_array(new_op_array TSRMLS_CC);
-		efree(new_op_array);
-		EG(return_value_ptr_ptr) = original_return_value_ptr_ptr;
-		retval = SUCCESS;
-	} else {
-		retval = FAILURE;
-	}
-	zval_dtor(&pv);
-	return retval;
-}
-
-#if MIDGARD_142MOD
-
 MGD_FUNCTION(ret_type, eval, (type param))
 {
  	zval *string, *name;
@@ -370,18 +291,6 @@ MGD_FUNCTION(ret_type, eval, (type param))
 
 	if(string->value.str.len) {
 		buffer = mgd_preparse_string(Z_STRVAL_P(string));
-
-/* OUTPUT IS SENT TO BROWSER WARNING! , uncomment if You really want this 
-  
-		if(mgd_eval_string(buffer->data, return_value, tmp CLS_CC ELS_CC) != SUCCESS) {
-
-			zend_syntax_highlighter_ini syntax_highlighter_ini;
-			php_get_highlight_struct(&syntax_highlighter_ini);
-			highlight_string(*string, &syntax_highlighter_ini, tmp);
-         g_byte_array_free(buffer, TRUE);
-			zend_bailout(); //exit(0);
-		}
-*/
 		g_byte_array_free(buffer, TRUE);
 	}
 }
