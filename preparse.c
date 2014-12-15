@@ -57,7 +57,7 @@ PHP_FUNCTION(mgd_preparse)
 	GByteArray *buffer;
 	CHECK_MGD;   
 
-	if (zend_parse_parameters(1 TSRMLS_CC, "s", &phpcode, &phpcode_length) != SUCCESS) { 
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &phpcode, &phpcode_length) != SUCCESS) { 
 		return;
 	}
 	
@@ -75,7 +75,7 @@ PHP_FUNCTION(mgd_format)
 	char *fmt = "";
 	CHECK_MGD;
 	
-	if (zend_parse_parameters(2 TSRMLS_CC, "s|s", &value, &value_length, &formatter, &formatter_length) != SUCCESS) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|s", &value, &value_length, &formatter, &formatter_length) != SUCCESS) {
 		return;
 	}
 	
