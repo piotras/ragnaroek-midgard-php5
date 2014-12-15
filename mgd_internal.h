@@ -89,18 +89,15 @@ extern int le_midgard_list_fetch;
 #define MGD_MOVE_AND_TOUCH(table,roottable,name,rootname,touch) \
 MGD_FUNCTION(int, move_##name, (int id, int root)) \
 { \
-   zval **id, **root; \
    RETVAL_FALSE; \
    CHECK_MGD; \
-   if (ZEND_NUM_ARGS() != 2 \
-         || zend_get_parameters_ex(2, &id, &root) != SUCCESS) \
-      WRONG_PARAM_COUNT; \
-   convert_to_long_ex(id); \
-   convert_to_long_ex(root); \
-   if(mgd_move_object(mgd_handle(), #table, #rootname, \
-      (*id)->value.lval, (*root)->value.lval)) RETVAL_TRUE; \
-   PHP_UPDATE_REPLIGARD(#table, (*id)->value.lval); \
-   PHP_UPDATE_REPLIGARD(#roottable, (*root)->value.lval); \
+   long id, root; \
+   if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ll", &id, &root) != SUCCESS) { \
+	   return; \
+   } \
+   if(mgd_move_object(mgd_handle(), #table, #rootname, id, root) RETVAL_TRUE; \
+   PHP_UPDATE_REPLIGARD(#table, id); \
+   PHP_UPDATE_REPLIGARD(#roottable, root); \
    if (touch) { TOUCH_CACHE; } \
 }
 
