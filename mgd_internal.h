@@ -103,66 +103,6 @@ MGD_FUNCTION(int, move_##name, (int id, int root)) \
 
 extern int midgard_user_call_func(midgard *mgd, int id, int level, void * xparam);
 
-#define MGD_WALK_FUNCTION(table) \
-							MGD_WALK_FUNCTION_EX(table, table, up)
-#define MGD_WALK_FUNCTION_EX(type, table, upfield) \
-/* {{{ proto void walk_ ## type ## _tree(string func, id, level, xparam[[, order], sort]) \
-*/ \
-MGD_FUNCTION(void, walk_ ## type ## _tree,(string func, int id, int level, mixed &xparam[, order[, sort]])) \
-{ \
-   zval **id, **level, **xparam, *xp[2], **order; \
-	zval **midgard_user_call_func_name, **sort = NULL; \
-	CHECK_MGD; \
-\
-	switch (ZEND_NUM_ARGS()) { \
-	case 6: \
-      if (zend_get_parameters_ex(6, &midgard_user_call_func_name, &id, \
-            &level, &xparam, &order, &sort) == FAILURE) { \
-         WRONG_PARAM_COUNT; \
-      } \
-      break; \
-	case 5: \
-      if (zend_get_parameters_ex(5, &midgard_user_call_func_name, &id, \
-            &level, &xparam, &order) == FAILURE) { \
-         WRONG_PARAM_COUNT; \
-      } else { \
-         sort = NULL; \
-      } \
-      break; \
-   case 4: \
-      if (zend_get_parameters_ex(4, &midgard_user_call_func_name, &id, \
-            &level, &xparam) == FAILURE) { \
-         WRONG_PARAM_COUNT; \
-      } else { \
-         order = NULL; \
-         sort = NULL; \
-      } \
-      break; \
-   default: \
-      WRONG_PARAM_COUNT; \
-      break; \
-   }\
-\
-	convert_to_string_ex(midgard_user_call_func_name); \
-	convert_to_long_ex(level); \
-	if (order) convert_to_long_ex(order); \
-	convert_to_long_ex(id); \
-	if(sort) convert_to_string_ex(sort); \
-\
-	xp[0] = (*xparam); \
-	xp[1] = (*midgard_user_call_func_name); \
-	RETVAL_LONG( \
-		mgd_walk_table_tree(mgd_handle(), #table, #upfield, (*id)->value.lval, \
-									   (*level)->value.lval, \
-									   order ? (*order)->value.lval : 1, \
-									   (void *)xp, \
-									   midgard_user_call_func, \
-									   sort ? (*sort)->value.str.val : NULL) \
-	); \
-} \
-\
-/* }}} */
-
 /* Commonly used macros
 */
 
