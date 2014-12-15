@@ -52,16 +52,16 @@ GByteArray *mgd_preparse_string(char *phpcode)
 
 PHP_FUNCTION(mgd_preparse)
 {
-	zval *phpcode;
+	char *phpcode;
+	int phpcode_length;
 	GByteArray *buffer;
 	CHECK_MGD;   
 
-	if (ZEND_NUM_ARGS() != 1 && ZEND_NUM_ARGS() != 2) { WRONG_PARAM_COUNT; }
-	if (zend_parse_parameters(1 TSRMLS_CC, "z", &phpcode) != SUCCESS) { WRONG_PARAM_COUNT; }
+	if (zend_parse_parameters(1 TSRMLS_CC, "s", &phpcode, &phpcode_length) != SUCCESS) { 
+		return;
+	}
 	
-	convert_to_string_ex(&phpcode);
-	buffer = mgd_preparse_string(Z_STRVAL_P(phpcode));
-	
+	buffer = mgd_preparse_string(phpcode);
 	RETVAL_STRING((gchar *)buffer->data, 1);
 	g_byte_array_free(buffer, TRUE);
 }
@@ -69,39 +69,18 @@ PHP_FUNCTION(mgd_preparse)
 PHP_FUNCTION(mgd_format)
 {
 	midgard_pool *pool;
-	zval *value, *formatter;
-	char *fmt = "";
+	char *value, *formatter = "";
+	int value_length, formatter_length;
 	char fmtspec[3];
 	CHECK_MGD;
 	
-	switch (ZEND_NUM_ARGS()) {
-		case 2:
-			if (zend_parse_parameters(2 TSRMLS_CC, "zz", &value, &formatter) != SUCCESS) {
-				WRONG_PARAM_COUNT;
-			}
-			break;
-		case 1:
-			if (zend_parse_parameters(1 TSRMLS_CC, "z", &value) != SUCCESS) {
-				WRONG_PARAM_COUNT;
-			}
-			fmt = NULL;
-			break;
-		default:
-			WRONG_PARAM_COUNT;
-			break;
-	}
-	
-	convert_to_string_ex(&value);
-	if (fmt) {
-		convert_to_string_ex(&formatter);
-		fmt = Z_STRVAL_P(formatter);
-	} else {
-		fmt = "";
+	if (zend_parse_parameters(2 TSRMLS_CC, "s|s", &value, &value_length, &formatter, &formatter_length) != SUCCESS) {
+		return;
 	}
 	
 	pool = mgd_alloc_pool();
 	strcpy(fmtspec, "$?");
-	fmtspec[1] = fmt[0];
+	fmtspec[1] = formatter[0];
 	
 	switch (fmtspec[1]) {
 		case '\0': /* default */
@@ -124,7 +103,6 @@ PHP_FUNCTION(mgd_format)
 			break;
 	}
 	/* We should duplicate string , but midgard pool is not freed anyway */
-	RETVAL_STRING(mgd_format(mgd_handle(), pool, fmtspec,
-				Z_STRVAL_P(value)), 1);
+	RETVAL_STRING(mgd_format(mgd_handle(), pool, fmtspec, value), 1);
 	mgd_free_pool(pool);
 }
