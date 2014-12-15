@@ -69,18 +69,22 @@ PHP_FUNCTION(mgd_preparse)
 PHP_FUNCTION(mgd_format)
 {
 	midgard_pool *pool;
-	char *value, *formatter = "";
+	char *value, *formatter = NULL;
 	int value_length, formatter_length;
 	char fmtspec[3];
+	char *fmt = "";
 	CHECK_MGD;
 	
 	if (zend_parse_parameters(2 TSRMLS_CC, "s|s", &value, &value_length, &formatter, &formatter_length) != SUCCESS) {
 		return;
 	}
 	
+	if (formatter != NULL)
+		fmt = formatter;
+
 	pool = mgd_alloc_pool();
 	strcpy(fmtspec, "$?");
-	fmtspec[1] = formatter[0];
+	fmtspec[1] = fmt[0];
 	
 	switch (fmtspec[1]) {
 		case '\0': /* default */
