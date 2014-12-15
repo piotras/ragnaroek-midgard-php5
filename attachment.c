@@ -33,7 +33,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <unistd.h>
 #include <ctype.h>
 
-enum { MGD_BLOB_CALL_FUNC, MGD_BLOB_CALL_SELF, MGD_BLOB_CALL_OTHER };
+enum { 
+	MGD_BLOB_CALL_FUNC, 
+	MGD_BLOB_CALL_SELF, 
+	MGD_BLOB_CALL_OTHER 
+};
 
 static long mgd_get_blob_id(zval *self, zval *name, int *calltype)
 {
@@ -46,68 +50,67 @@ static long mgd_get_blob_id(zval *self, zval *name, int *calltype)
 	int myId;
 #endif /* HAVE_MIDGARD_MULTILANG */
 
-   if (self == NULL) {
-      if (calltype) *calltype = MGD_BLOB_CALL_FUNC;
-      if (name == NULL) return MGD_ERR_INVALID_NAME;
-      convert_to_long_ex(&name);
-      return Z_LVAL_P(name);
-   }
+	if (self == NULL) {
+		if (calltype) *calltype = MGD_BLOB_CALL_FUNC;
+		if (name == NULL) return MGD_ERR_INVALID_NAME;
+		convert_to_long_ex(&name);
+		return Z_LVAL_P(name);
+	}
 
-   if (!MGD_PROPFIND(self, "__table__", table)) {
-      return MGD_ERR_NOT_OBJECT;
-   }
+	if (!MGD_PROPFIND(self, "__table__", table)) {
+		return MGD_ERR_NOT_OBJECT;
+	}
+	
+	if (!MGD_PROPFIND(self, "id", id)) {
+		return MGD_ERR_NOT_OBJECT;
+	}
+	else {
+		convert_to_long_ex(id);
+	}
 
-   if (!MGD_PROPFIND(self, "id", id)) {
-      return MGD_ERR_NOT_OBJECT;
-   }
-   else
-   convert_to_long_ex(id);
+	if (Z_TYPE_PP(table) != IS_STRING) {
+		return MGD_ERR_NOT_OBJECT;
+	}
 
-   if ((*table)->type != IS_STRING) {
-      return MGD_ERR_NOT_OBJECT;
-   }
+	if (is_table_multilang(Z_STRVAL_PP(table))) {
+		if (!MGD_PROPFIND(self, "lang", zv_lang)) {
+			return MGD_ERR_NOT_OBJECT;
+		}
+		convert_to_long_ex(zv_lang);
+		lang = Z_LVAL_PP(zv_lang);
+	}
 
-   if (is_table_multilang((*table)->value.str.val)) {
-       if (!MGD_PROPFIND(self, "lang", zv_lang)) {
-           return MGD_ERR_NOT_OBJECT;
-       }
-       convert_to_long_ex(zv_lang);
-       lang = (*zv_lang)->value.lval;
-   }
-
-
-   if (strcmp((*table)->value.str.val, "blobs") == 0) {
-      if (calltype) *calltype = MGD_BLOB_CALL_SELF;
-      convert_to_long_ex(id);
-      return (*id)->value.lval;
-   }
-
-   if (calltype) *calltype = MGD_BLOB_CALL_OTHER;
-   if (name == NULL) return MGD_ERR_INVALID_NAME;
-   convert_to_string_ex(&name);
-
-   myId = mgd_exists_id(mgd_handle(), "blobs",
+	if (strcmp(Z_STRVAL_PP(table), "blobs") == 0) {
+		if (calltype) *calltype = MGD_BLOB_CALL_SELF;
+		convert_to_long_ex(id);
+		return Z_LVAL_PP(id);
+	}
+	
+	if (calltype) *calltype = MGD_BLOB_CALL_OTHER;
+	if (name == NULL) return MGD_ERR_INVALID_NAME;
+	convert_to_string_ex(&name);
+	
+	myId = mgd_exists_id(mgd_handle(), "blobs",
 			"ptable=$q AND pid=$d AND name=$q AND lang=$d",
-			(*table)->value.str.val, (*id)->value.lval,
+			Z_STRVAL_PP(table), Z_LVAL_PP(id),
 			Z_LVAL_P(name), lang);
-   if (myId) {
-     return myId;
-   } else {
-     return mgd_exists_id(mgd_handle(), "blobs", "ptable=$q AND pid=$d AND name=$q AND lang=$d",
-			  (*table)->value.str.val, (*id)->value.lval,
-			  Z_LVAL_P(name)), mgd_get_default_lang(mgd_handle());
-   }
+	
+	if (myId) {
+		return myId;
+	} else {
+		return mgd_exists_id(mgd_handle(), "blobs", "ptable=$q AND pid=$d AND name=$q AND lang=$d",
+				Z_STRVAL_PP(table), Z_LVAL_PP(id),
+				Z_LVAL_P(name)), mgd_get_default_lang(mgd_handle());
+	}
 
 }
 
 MGD_FUNCTION(int, oop_attachment_create, (string name, string title, string mimetype, [int score]))
 {
 	zval *self;
-	zval **zv_table, **zv_id;
-	zval *zv_name, *zv_title, *zv_mimetype, *zv_score, **sitegroup_property;
+	zval **zv_table, **zv_id, **sitegroup_property;
 	int id = 0, current_sitegroup;
 	int table;
-	int score;
 	char location[MIDGARD_REPLIGARD_TAG_LENGTH + 5];
 	char *path;
 	struct stat statbuf;
@@ -135,75 +138,50 @@ MGD_FUNCTION(int, oop_attachment_create, (string name, string title, string mime
 
 	if (!MGD_PROPFIND(self, "__table__", zv_table)) {
 		RETURN_FALSE_BECAUSE(MGD_ERR_NOT_OBJECT);
-   }
+	}
 	if (!MGD_PROPFIND(self, "id", zv_id)) {
 		RETURN_FALSE_BECAUSE(MGD_ERR_NOT_OBJECT);
-   }
+	}
 
 	convert_to_string_ex(zv_table);
 	convert_to_long_ex(zv_id);
 
-	if (is_table_multilang((*zv_table)->value.str.val)) {
-        if (!MGD_PROPFIND(self, "lang", zv_lang)) {
-            RETURN_FALSE_BECAUSE(MGD_ERR_NOT_OBJECT);
-        }
-        convert_to_long_ex(zv_lang);
-        lang = mgd_attachments_defaultlang(mgd_handle()) ? mgd_get_default_lang(mgd_handle())  :(*zv_lang)->value.lval;
+	if (is_table_multilang(Z_STRVAL_PP(zv_table))) {
+        	if (!MGD_PROPFIND(self, "lang", zv_lang)) {
+            		RETURN_FALSE_BECAUSE(MGD_ERR_NOT_OBJECT);
+        	}
+        	convert_to_long_ex(zv_lang);
+        	lang = mgd_attachments_defaultlang(mgd_handle()) ? mgd_get_default_lang(mgd_handle())  : Z_LVAL_PP(zv_lang);
 	}
 
-    switch (ZEND_NUM_ARGS()) {
-		case 3:
-			if (zend_parse_parameters
-			    (3 TSRMLS_CC, "zzz", &zv_name, &zv_title, &zv_mimetype) != SUCCESS) {
-				WRONG_PARAM_COUNT;
-			}
-			score = 0;
-			break;
-		case 4:
-			if (zend_parse_parameters
-			    (4 TSRMLS_CC, "zzzz", &zv_name, &zv_title, &zv_mimetype, &zv_score)
-			    != SUCCESS) {
-				WRONG_PARAM_COUNT;
-			}
-			convert_to_long_ex(&zv_score);
-			score = Z_LVAL_P(zv_score);
-			break;
-		default:
-			WRONG_PARAM_COUNT;
+	char *name, *title, *mimetype;
+	int name_length, title_length, mimetype_length;
+	long score = 0;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sss|l",
+				&name, &name_length, &title, &title_length, &mimetype, &mimetype_length, &score) == FAILURE) {
+		return;
 	}
 
-	convert_to_string_ex(&zv_name);
-	convert_to_string_ex(&zv_title);
-	convert_to_string_ex(&zv_mimetype);
+	if (mgd_exists_id (mgd_handle(), "blobs", "ptable=$q AND pid=$d AND name=$q AND lang=$d",
+				Z_STRVAL_PP(zv_table), Z_LVAL_PP(zv_id), name, lang))  {
+		RETURN_FALSE_BECAUSE(MGD_ERR_DUPLICATE);
+	}
 
+	id = Z_LVAL_PP(zv_id);    
 
-	if (mgd_exists_id
-	    (mgd_handle(), "blobs", "ptable=$q AND pid=$d AND name=$q AND lang=$d",
-	     Z_STRVAL_PP(zv_table), Z_LVAL_PP(zv_id),
-	     Z_STRVAL_P(zv_name), lang
-	     ))  {
-        RETURN_FALSE_BECAUSE(MGD_ERR_DUPLICATE);
-    }
-
-    id = Z_LVAL_PP(zv_id);    
-
-    /* Switch to anonymous mode for MgdSchema objects */
-    MGD_PHP_PCLASS_NAME;
-    if (g_hash_table_lookup(mgd_handle()->schema->types, ce->name) == NULL) {
-
-        table = mgd_lookup_table_id(Z_STRVAL_PP(zv_table));
-       
-	    if (!isglobalowner(table, id)) {
-		    RETURN_FALSE_BECAUSE(MGD_ERR_ACCESS_DENIED);
-        }
-    }
-
-    do {
-		strcpy(location + 4,
-		       mgd_create_guid(mgd_handle(),
-				       Z_STRVAL_PP(zv_table), id));
+	/* Switch to anonymous mode for MgdSchema objects */
+	MGD_PHP_PCLASS_NAME;
+	if (g_hash_table_lookup(mgd_handle()->schema->types, ce->name) == NULL) {
+		table = mgd_lookup_table_id(Z_STRVAL_PP(zv_table));
+		if (!isglobalowner(table, id)) {
+			RETURN_FALSE_BECAUSE(MGD_ERR_ACCESS_DENIED);
+		}
+	}
+	
+	do {
+		strcpy(location + 4, mgd_create_guid(mgd_handle(),Z_STRVAL_PP(zv_table), id));
 	} while (strstr(location + 4, ".."));
-
 	/* some basic hashing to aid in dirsize balancing. This probably
 	   needs refinement since the md5 checksum we use to generate the names
 	   returns all readable chars which don't distribute well with the
@@ -248,13 +226,12 @@ MGD_FUNCTION(int, oop_attachment_create, (string name, string title, string mime
 				   "ptable,pid,name,title,location,mimetype,author,created,score,lang",
 				   "$q,$d,$q,$q,$q,$q,$d,Now(),$d,$d",
 				   Z_STRVAL_PP(zv_table), id,
-				   Z_STRVAL_P(zv_name),
-				   Z_STRVAL_P(zv_title), location,
-				   Z_STRVAL_P(zv_mimetype),
-				   mgd_user(mgd_handle()), score, lang);
+				   name,
+				   title, location,
+				   mimetype,
+				   mgd_user(mgd_handle()), (int)score, lang);
 
-		gobj = midgard_object_new(mgd_handle(), 
-				"midgard_attachment", NULL);
+		gobj = midgard_object_new(mgd_handle(), "midgard_attachment", NULL);
 		if(midgard_object_get_by_id(gobj, (guint) Z_LVAL_P(return_value))) {
 			midgard_quota_update(gobj);
 			g_object_unref(gobj);
@@ -271,11 +248,11 @@ MGD_FUNCTION(int, oop_attachment_create, (string name, string title, string mime
 
 MGD_FUNCTION(mixed, oop_attachment_list, ([string sort]))
 {
-	zval *self, **zv_table, **zv_id, *zv_order;
-	char *order = NULL;
+	zval *self, **zv_table, **zv_id;
+	char *order;
+	int order_length;
 	zval **zv_lang;
 	zend_class_entry *ce;
-
 
 	CHECK_MGD;
 
@@ -284,41 +261,35 @@ MGD_FUNCTION(mixed, oop_attachment_list, ([string sort]))
 		RETURN_FALSE_BECAUSE(MGD_ERR_NOT_OBJECT);
 	}
 
-    MGD_PHP_PCLASS_NAME;
+	MGD_PHP_PCLASS_NAME;
     
 	if (!MGD_PROPFIND(self, "__table__", zv_table)) {
 		RETURN_FALSE_BECAUSE(MGD_ERR_NOT_OBJECT);
-   }
+	}
 	if (!MGD_PROPFIND(self, "id", zv_id)) {
 		RETURN_FALSE_BECAUSE(MGD_ERR_NOT_OBJECT);
-   }
+	}
 
 	convert_to_string_ex(zv_table);
 	convert_to_long_ex(zv_id);
 
 #if HAVE_MIDGARD_MULTILANG
-	if (is_table_multilang((*zv_table)->value.str.val)) {
-        if (!MGD_PROPFIND(self, "lang", zv_lang)) {
-            RETURN_FALSE_BECAUSE(MGD_ERR_NOT_OBJECT);
-        }
-        convert_to_long_ex(zv_lang);
+	if (is_table_multilang(Z_STRVAL_PP(zv_table))) {
+        	if (!MGD_PROPFIND(self, "lang", zv_lang)) {
+            		RETURN_FALSE_BECAUSE(MGD_ERR_NOT_OBJECT);
+        	}
+        	convert_to_long_ex(zv_lang);
 	}
 #endif /* HAVE_MIDGARD_MULTILANG */
 
-
-	if (ZEND_NUM_ARGS() == 1) {
-		if (zend_parse_parameters(1 TSRMLS_CC, "z", &zv_order) == FAILURE) {
-			WRONG_PARAM_COUNT;
-		}
-		else {
-			convert_to_string_ex(&zv_order);
-			order = Z_STRVAL_P(zv_order);
-		}
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &order, &order_length) == FAILURE) {
+		return;
 	}
+
 	php_midgard_select(&MidgardAttachment, return_value,
-			   "id,name,title,mimetype,score,author,created" SITEGROUP_SELECT,
-			   "blobs", "ptable=$q AND pid=$d", order,
-			   Z_STRVAL_PP(zv_table), Z_LVAL_PP(zv_id));
+			"id,name,title,mimetype,score,author,created" SITEGROUP_SELECT,
+			"blobs", "ptable=$q AND pid=$d", order,
+			Z_STRVAL_PP(zv_table), Z_LVAL_PP(zv_id));
 }
 
 MGD_FUNCTION(int, open_attachment, ([int id, [string mode]]))
@@ -333,140 +304,109 @@ MGD_FUNCTION(int, open_attachment, ([int id, [string mode]]))
 	midgard_pool *pool;
 	midgard_res *res, *qres;
 	const char *blobdir;
-	zval *zv_id, *zv_mode;
-    zval *self;
-    long aid;
-    zend_class_entry *ce;
+	zval *zv_id;
+    	zval *self;
+    	long aid;
+    	zend_class_entry *ce;
 
 #if HAVE_MIDGARD_QUOTA
-   int spacelim = 0, length = 0;
+   	int spacelim = 0, length = 0;
 #endif
 
 #if PHP_MAJOR_VERSION > 4 || (PHP_MAJOR_VERSION == 4 && PHP_MINOR_VERSION >= 3)
-   php_stream *stream;
+   	php_stream *stream;
 #endif
-
 	CHECK_MGD;
 	RETVAL_FALSE;
 
 	blobdir = mgd_get_blobdir(mgd_handle());
 	if (!blobdir || *blobdir != '/') {
 		RETURN_FALSE_BECAUSE(MGD_ERR_ACCESS_DENIED);
-   }
-
-	switch (ZEND_NUM_ARGS()) {
-        
-        case 0:
-            zv_id = NULL;
-            zv_mode = NULL;
-            break;
-		            
-        case 1:
-            if (zend_parse_parameters(1 TSRMLS_CC, "z", &zv_id) != SUCCESS) {
-                WRONG_PARAM_COUNT;
-            }
-			zv_mode = NULL;
-			break;
-            
-		case 2:
-			if (zend_parse_parameters(2 TSRMLS_CC, "z", &zv_id, &zv_mode) !=
-			    SUCCESS) {
-				WRONG_PARAM_COUNT;
-			}
-			break;
-            
-		default:
-			WRONG_PARAM_COUNT;
 	}
 
-   
-   aid = mgd_get_blob_id((self = getThis()), zv_id, NULL);
-   if (aid == 0) { RETURN_FALSE_BECAUSE(MGD_ERR_NOT_EXISTS); }
-   else if (aid == MGD_ERR_INVALID_NAME) { WRONG_PARAM_COUNT; }
-   else if (aid < 0) { RETURN_FALSE_BECAUSE(aid); }
+	zv_id = NULL;
+	char *mode = NULL;
+	int mode_length;
 
-   if(zv_mode)
-       convert_to_string_ex(&zv_mode);
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|zs", &zv_id, &mode, &mode_length) == FAILURE) {
+		return;
+	}
 
-	res = mgd_sitegroup_record(mgd_handle(), "ptable,pid,location",
-				   "blobs", aid);
+	aid = mgd_get_blob_id((self = getThis()), zv_id, NULL);
+	if (aid == 0) { RETURN_FALSE_BECAUSE(MGD_ERR_NOT_EXISTS); }
+	else if (aid == MGD_ERR_INVALID_NAME) { WRONG_PARAM_COUNT; }
+	else if (aid < 0) { RETURN_FALSE_BECAUSE(aid); }
+
+	res = mgd_sitegroup_record(mgd_handle(), "ptable,pid,location",	"blobs", aid);
 
 	if (!res || !mgd_fetch(res)) {
 		if (res) {
 			mgd_release(res);
-      }
-
+		}
 		RETURN_FALSE_BECAUSE(MGD_ERR_NOT_EXISTS);
 	}
-
+	
 	ptable = mgd_lookup_table_id(mgd_colvalue(res, 0));
 	pid = mgd_sql2id(res, 1);
 	location = mgd_colvalue(res, 2);
-
+	
 	/* Check for relative location - not allowed */
 	if (strstr(location, "..")) {
 		mgd_release(res);
 		php_log_err("Midgard: blobdir location relative" TSRMLS_CC);
-
 		RETURN_FALSE_BECAUSE(MGD_ERR_ACCESS_DENIED);
 	}
-
-    /* Switch to anonymous mode for MgdSchema objects */
-  
-    if (getThis()) { 
-        MGD_PHP_PCLASS_NAME;
-    
-    if (g_hash_table_lookup(mgd_handle()->schema->types, ce->name) == NULL) {
-
-        /* Check access permissions: Write-Access requires ownership, */
-	    /* Read access is allowed by default */
-    	if (zv_mode)
-	    	if (strcmp(Z_STRVAL_P(zv_mode), "r") != 0
-	        	   && !isglobalowner(ptable, pid)) {
-			    mgd_release(res);
-    			php_log_err("Midgard: Attachment Write Access only for owner" TSRMLS_CC);
-
-	    		RETURN_FALSE_BECAUSE(MGD_ERR_ACCESS_DENIED);
-		    } 
-    }
-    }
+	
+	/* Switch to anonymous mode for MgdSchema objects */
+	if (getThis()) { 
+		MGD_PHP_PCLASS_NAME;
+		if (g_hash_table_lookup(mgd_handle()->schema->types, ce->name) == NULL) {
+			/* Check access permissions: Write-Access requires ownership, */
+			/* Read access is allowed by default */
+			if (mode) {
+				if (strcmp(mode, "r") != 0 && !isglobalowner(ptable, pid)) {
+					mgd_release(res);
+					php_log_err("Midgard: Attachment Write Access only for owner" TSRMLS_CC);
+					RETURN_FALSE_BECAUSE(MGD_ERR_ACCESS_DENIED);
+				} 
+			}
+		}
+	}
 
 	pool = mgd_alloc_pool();
 #if HAVE_MIDGARD_QUOTA
 	if (mgd_get_quota(mgd_handle())) {
-	  qres = mgd_query(mgd_handle(), "SELECT space FROM quota WHERE sg = $d and tablename = 'blobsdata'", mgd_sitegroup(mgd_handle()));
-	  if (qres) {
-	    if (mgd_fetch(qres)) {
-	      spacelim = mgd_sql2id(qres, 0);
-	    }
-	    mgd_release(qres);
-	  }
-	  if (spacelim) {
-	    length = mgd_get_quota_space(mgd_handle(), "blobsdata", NULL, 0);
-	    if (length >= spacelim) {
-	      g_log("midgard-lib", G_LOG_LEVEL_DEBUG,
-		    "Quota exceeded: length = %d", length);
-	      mgd_free_pool(pool);
-	      RETURN_FALSE_BECAUSE(MGD_ERR_QUOTA);
-	    }
-	  }
-	  spacelim = 0;
-	  qres = mgd_query(mgd_handle(), "SELECT space FROM quota WHERE sg = $d and tablename = 'wholesg'", mgd_sitegroup(mgd_handle()));
-	  if (qres) {
-	    if (mgd_fetch(qres)) {
-	      spacelim = mgd_sql2id(qres, 0);
-	    }
-	    mgd_release(qres);
-	  }
-	  if (spacelim) {
-	    length = mgd_get_quota_space(mgd_handle(), "wholesg", NULL, 0);
-	    if (length >= spacelim) {
-	      g_log("midgard-lib", G_LOG_LEVEL_DEBUG,
-		    "Quota exceeded: length = %d", length);
-	      mgd_free_pool(pool);
-	      RETURN_FALSE_BECAUSE(MGD_ERR_QUOTA);
-	    }
-	  }
+		qres = mgd_query(mgd_handle(), "SELECT space FROM quota WHERE sg = $d and tablename = 'blobsdata'", mgd_sitegroup(mgd_handle()));
+		if (qres) {
+			if (mgd_fetch(qres)) {
+				spacelim = mgd_sql2id(qres, 0);
+			}
+			mgd_release(qres);
+		}
+		if (spacelim) {
+			length = mgd_get_quota_space(mgd_handle(), "blobsdata", NULL, 0);
+			if (length >= spacelim) {
+				g_log("midgard-lib", G_LOG_LEVEL_DEBUG, "Quota exceeded: length = %d", length);
+				mgd_free_pool(pool);
+				RETURN_FALSE_BECAUSE(MGD_ERR_QUOTA);
+			}
+		}
+		spacelim = 0;
+		qres = mgd_query(mgd_handle(), "SELECT space FROM quota WHERE sg = $d and tablename = 'wholesg'", mgd_sitegroup(mgd_handle()));
+		if (qres) {
+			if (mgd_fetch(qres)) {
+				spacelim = mgd_sql2id(qres, 0);
+			}
+			mgd_release(qres);
+		}
+		if (spacelim) {
+			length = mgd_get_quota_space(mgd_handle(), "wholesg", NULL, 0);
+			if (length >= spacelim) {
+				g_log("midgard-lib", G_LOG_LEVEL_DEBUG,	"Quota exceeded: length = %d", length);
+				mgd_free_pool(pool);
+				RETURN_FALSE_BECAUSE(MGD_ERR_QUOTA);
+			}
+		}
 	}
 	mgd_touch_recorded_quota(mgd_handle(), "blobsdata", mgd_sitegroup(mgd_handle()));
 	mgd_touch_recorded_quota(mgd_handle(), "wholesg", mgd_sitegroup(mgd_handle()));
@@ -474,54 +414,43 @@ MGD_FUNCTION(int, open_attachment, ([int id, [string mode]]))
 	path = mgd_format(mgd_handle(), pool, "$s/$s", blobdir, location);
 
 #if PHP_MAJOR_VERSION > 4 || (PHP_MAJOR_VERSION == 4 && PHP_MINOR_VERSION >= 3)
-   stream = php_stream_open_wrapper_ex(path, zv_mode ? Z_STRVAL_P(zv_mode) : "w", IGNORE_PATH | IGNORE_URL | STREAM_DISABLE_OPEN_BASEDIR, NULL, NULL);
-   if (stream == NULL) {
-       RETVAL_FALSE_BECAUSE(MGD_ERR_INTERNAL);
-   } else {
-       
-       /* Update repligard's entry  without any knowledge if PHP's fputs or fwrite
-        * functions didn't return FALSE. Not ellegant solution to update guid here
-        * but resolve problem of updating every Midgard application which needs to update
-        * guid.
-        */ 
-       if (zv_mode) {
-           if (strcmp(Z_STRVAL_P(zv_mode), "w") == 0) {
-               PHP_UPDATE_REPLIGARD("blobs", aid);
-           }
-       } else {
-           PHP_UPDATE_REPLIGARD("blobs", aid);
-       }
-                  
-       php_stream_to_zval(stream, return_value);
-   }
-
+	stream = php_stream_open_wrapper_ex(path, mode ? mode : "w", IGNORE_PATH | IGNORE_URL | STREAM_DISABLE_OPEN_BASEDIR, NULL, NULL);
+	if (stream == NULL) {
+		RETVAL_FALSE_BECAUSE(MGD_ERR_INTERNAL);
+	} else {
+		/* Update repligard's entry  without any knowledge if PHP's fputs or fwrite
+		 * functions didn't return FALSE. Not ellegant solution to update guid here
+		 * but resolve problem of updating every Midgard application which needs to update guid.
+		 */ 
+		if (mode) {
+			if (strcmp(mode, "w") == 0) {
+				PHP_UPDATE_REPLIGARD("blobs", aid);
+			}
+		} else {
+			PHP_UPDATE_REPLIGARD("blobs", aid);
+		}
+		php_stream_to_zval(stream, return_value);
+	}
 #else
-	fp = fopen(path, zv_mode ? Z_STRVAL_P(zv_mode) : "w");
-
+	fp = fopen(path, mode ? mode : "w");
 	if (!fp) {
-        RETVAL_FALSE_BECAUSE(MGD_ERR_ACCESS_DENIED);
-    } else {
-        
-        if (mgd_update
-                (mgd_handle(), "blobs", aid,
-                 "author=$d,created=Now()", mgd_user(mgd_handle()))) {
-            
-            ZEND_REGISTER_RESOURCE(return_value, fp, php_file_le_fopen());
-
-            /* Update repligard's entry  without any knowledge if PHP's fputs or fwrite
-             * functions didn't return FALSE. Not ellegant solution to update guid here
-             * but resolve problem of updating every Midgard application which needs to update
-             * guid.
-             */ 
-            if (strcmp(Z_STRVAL_P(zv_mode), "w") == 0) {
-                PHP_UPDATE_REPLIGARD("blobs", aid);
-            }
-
-        } else {
-            fclose(fp);
+		RETVAL_FALSE_BECAUSE(MGD_ERR_ACCESS_DENIED);
+	} else {
+		if (mgd_update(mgd_handle(), "blobs", aid,
+					"author=$d,created=Now()", mgd_user(mgd_handle()))) {
+			ZEND_REGISTER_RESOURCE(return_value, fp, php_file_le_fopen());
+			/* Update repligard's entry  without any knowledge if PHP's fputs or fwrite
+			 * functions didn't return FALSE. Not ellegant solution to update guid here
+			 * but resolve problem of updating every Midgard application which needs to update guid.
+			 */ 
+			if (strcmp(mode, "w") == 0) {
+				PHP_UPDATE_REPLIGARD("blobs", aid);
+			}	
+		} else {
+			fclose(fp);
 			fp = NULL;
-        }
-    }
+		}
+	}
 
 	if (!fp) {
 		RETVAL_FALSE_BECAUSE(MGD_ERR_ACCESS_DENIED);
@@ -536,25 +465,20 @@ MGD_FUNCTION(int, open_attachment, ([int id, [string mode]]))
 MGD_FUNCTION(mixed, get_attachment, (int id))
 {
 	zval *id;
-   zval *self;
-   long aid;
+   	zval *self;
+   	long aid;
 	CHECK_MGD;
 
-	switch (ZEND_NUM_ARGS()) {
-		case 1:
-			if (zend_parse_parameters(1 TSRMLS_CC, "z", &id) != SUCCESS) WRONG_PARAM_COUNT;
-         break;
-
-		default:
-			WRONG_PARAM_COUNT;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &id) == FAILURE) {
+		return;
 	}
 
-   aid = mgd_get_blob_id((self = getThis()), id, NULL);
-   if (aid == 0) { RETURN_FALSE_BECAUSE(MGD_ERR_NOT_EXISTS); }
-   else if (aid == MGD_ERR_INVALID_NAME) { WRONG_PARAM_COUNT; }
-   else if (aid < 0) { RETURN_FALSE_BECAUSE(aid); }
-
-   php_midgard_get_object(return_value, MIDGARD_OBJECT_BLOBS, aid);
+	aid = mgd_get_blob_id((self = getThis()), id, NULL);
+	if (aid == 0) { RETURN_FALSE_BECAUSE(MGD_ERR_NOT_EXISTS); }
+	else if (aid == MGD_ERR_INVALID_NAME) { WRONG_PARAM_COUNT; }
+	else if (aid < 0) { RETURN_FALSE_BECAUSE(aid); }
+	
+	php_midgard_get_object(return_value, MIDGARD_OBJECT_BLOBS, aid);
 }
 
 MGD_FUNCTION(bool, serve_attachment, (int id))
@@ -567,39 +491,28 @@ MGD_FUNCTION(bool, serve_attachment, (int id))
 	int b;
 	char buf[1024];
 	const char *blobdir;
-   int id;
-   zval *self, *zv_id;
-   char *content_type;
+   	int id;
+   	zval *self, *zv_id = NULL;
+   	char *content_type;
 
 	CHECK_MGD;
 	RETVAL_FALSE;
 
-	switch (ZEND_NUM_ARGS()) {
-		case 0:
-         zv_id = NULL;
-         break;
-
-		case 1:
-			if (zend_parse_parameters(1 TSRMLS_CC, "z", &zv_id) != SUCCESS) WRONG_PARAM_COUNT;
-         break;
-
-		default:
-			WRONG_PARAM_COUNT;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|z", &zv_id) == FAILURE) {
+		return;
 	}
 
-   id = mgd_get_blob_id((self = getThis()), zv_id, NULL);
-   if (id == 0) { RETURN_FALSE_BECAUSE(MGD_ERR_NOT_EXISTS); }
-   else if (id == MGD_ERR_INVALID_NAME) { WRONG_PARAM_COUNT; }
-   else if (id < 0) { RETURN_FALSE_BECAUSE(id); }
-
+	id = mgd_get_blob_id((self = getThis()), zv_id, NULL);
+	if (id == 0) { RETURN_FALSE_BECAUSE(MGD_ERR_NOT_EXISTS); }
+	else if (id == MGD_ERR_INVALID_NAME) { WRONG_PARAM_COUNT; }
+	else if (id < 0) { RETURN_FALSE_BECAUSE(id); }
+	
 	blobdir = mgd_get_blobdir(mgd_handle());
 	if (!blobdir || *blobdir != '/') {
 		RETURN_FALSE_BECAUSE(MGD_ERR_INTERNAL);
-   }
+	}
 
-	res =
-	   mgd_sitegroup_record(mgd_handle(), "location,mimetype", "blobs",
-				id);
+	res = mgd_sitegroup_record(mgd_handle(), "location,mimetype", "blobs", id);
 
 	if (!res || !mgd_fetch(res)) {
 		if (res) { mgd_release(res); }
@@ -627,16 +540,14 @@ MGD_FUNCTION(bool, serve_attachment, (int id))
 
 		RETURN_FALSE_BECAUSE(MGD_ERR_INTERNAL);
 	}
-
-   content_type
-      = mgd_format (mgd_handle(), pool, "Content-type: $s", mimetype);
-   sapi_add_header(content_type, strlen(content_type), 1);
+	
+	content_type = mgd_format (mgd_handle(), pool, "Content-type: $s", mimetype);
+	sapi_add_header(content_type, strlen(content_type), 1);
 
 	if (sapi_send_headers(TSRMLS_C) != SUCCESS) {
 		mgd_free_pool(pool);
 		mgd_release(res);
-      fclose(fp);
-
+		fclose(fp);
 		RETURN_FALSE_BECAUSE(MGD_ERR_INTERNAL);
 	}
 
@@ -644,7 +555,7 @@ MGD_FUNCTION(bool, serve_attachment, (int id))
 		PHPWRITE(buf, b);
 	}
 
-   fclose(fp);
+	fclose(fp);
 	mgd_free_pool(pool);
 	mgd_release(res);
 	RETVAL_TRUE;
@@ -657,24 +568,15 @@ MGD_FUNCTION(mixed, stat_attachment, (int id))
 	midgard_pool *pool;
 	char *path;
 	struct stat blobstat;
-   long id;
-   zval *zv_id, *self;
-   midgard_directory_config *dcfg;
+   	long id;
+   	zval *zv_id = NULL, *self;
+   	midgard_directory_config *dcfg;
 
 	CHECK_MGD;
 	RETVAL_FALSE;
 
-	switch (ZEND_NUM_ARGS()) {
-		case 0:
-         zv_id = NULL;
-         break;
-
-		case 1:
-			if (zend_parse_parameters(1 TSRMLS_CC, "z", &zv_id) != SUCCESS) WRONG_PARAM_COUNT;
-         break;
-
-		default:
-			WRONG_PARAM_COUNT;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|z", &zv_id) == FAILURE) {
+		return;
 	}
 
 	id = mgd_get_blob_id((self = getThis()), zv_id, NULL);
@@ -699,14 +601,11 @@ MGD_FUNCTION(mixed, stat_attachment, (int id))
 
 	if (!location || !*location || strstr(location, "..")) {
 		mgd_release(res);
-
 		RETURN_FALSE_BECAUSE(MGD_ERR_NOT_EXISTS);
 	}
 
 	pool = mgd_alloc_pool();
-	path =
-	   mgd_format(mgd_handle(), pool, "$s/$s", dcfg->blobdir,
-		      location);
+	path = mgd_format(mgd_handle(), pool, "$s/$s", dcfg->blobdir, location);
 	stat(path, &blobstat);	
 
 	if (array_init(return_value) == FAILURE) {
@@ -748,42 +647,31 @@ MGD_FUNCTION(bool, delete_attachment, (int id))
 	midgard_pool *pool;
 	midgard_res *res;
 	const char *blobdir;
-   long id;
-   zval *self, *zv_id;
+   	long id;
+   	zval *self, *zv_id = NULL;
 
 	CHECK_MGD;
 	RETVAL_FALSE;
 
-	switch (ZEND_NUM_ARGS()) {
-		case 0:
-         zv_id = NULL;
-         break;
-
-		case 1:
-			if (zend_parse_parameters(1 TSRMLS_CC, "z", &zv_id) != SUCCESS) WRONG_PARAM_COUNT;
-         break;
-
-		default:
-			WRONG_PARAM_COUNT;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|z", &zv_id) == FAILURE) {
+		return;
 	}
 
-   id = mgd_get_blob_id((self = getThis()), zv_id, NULL);
-   if (id == 0) { RETURN_FALSE_BECAUSE(MGD_ERR_NOT_EXISTS); }
-   else if (id == MGD_ERR_INVALID_NAME) { WRONG_PARAM_COUNT; }
-   else if (id < 0) { RETURN_FALSE_BECAUSE(id); }
-
+	id = mgd_get_blob_id((self = getThis()), zv_id, NULL);
+	if (id == 0) { RETURN_FALSE_BECAUSE(MGD_ERR_NOT_EXISTS); }
+	else if (id == MGD_ERR_INVALID_NAME) { WRONG_PARAM_COUNT; }
+	else if (id < 0) { RETURN_FALSE_BECAUSE(id); }
+	
 	if (mgd_has_dependants(mgd_handle(), id, "blobs")) {
 		RETURN_FALSE_BECAUSE(MGD_ERR_HAS_DEPENDANTS);
-   }
+	}
 
 	blobdir = mgd_get_blobdir(mgd_handle());
 	if (!blobdir || *blobdir != '/') {
 		RETURN_FALSE_BECAUSE(MGD_ERR_INTERNAL);
-   }
+	}
 
-	res =
-	   mgd_sitegroup_record(mgd_handle(), "ptable,pid,location", "blobs",
-				id);
+	res = mgd_sitegroup_record(mgd_handle(), "ptable,pid,location", "blobs", id);
 
 	if (!res || !mgd_fetch(res)) {
 		if (res) { mgd_release(res); }
@@ -796,7 +684,6 @@ MGD_FUNCTION(bool, delete_attachment, (int id))
 
 	if (strstr(location, "..") || !isglobalowner(ptable, pid)) {
 		mgd_release(res);
-
 		RETURN_FALSE_BECAUSE(MGD_ERR_ACCESS_DENIED);
 	}
 
@@ -855,30 +742,29 @@ MGD_FUNCTION(bool, update_attachment, (int id, string name, string title, string
 			score = NULL;
 			break;
 
-      case 0:
-         id = NULL;
-         break;
+      		case 0:
+			id = NULL;
+			break;
 
 		default:
 			WRONG_PARAM_COUNT;
 			break;
 	}
+	
+	aid = mgd_get_blob_id((self = getThis()), id, &calltype);
+	if (aid == 0) { RETURN_FALSE_BECAUSE(MGD_ERR_NOT_EXISTS); }
+	else if (aid == MGD_ERR_INVALID_NAME) { WRONG_PARAM_COUNT; }
+	else if (aid < 0) { RETURN_FALSE_BECAUSE(aid); }
 
-   aid = mgd_get_blob_id((self = getThis()), id, &calltype);
-   if (aid == 0) { RETURN_FALSE_BECAUSE(MGD_ERR_NOT_EXISTS); }
-   else if (aid == MGD_ERR_INVALID_NAME) { WRONG_PARAM_COUNT; }
-   else if (aid < 0) { RETURN_FALSE_BECAUSE(aid); }
-
-   if (calltype == MGD_BLOB_CALL_SELF) {
-      if (!MGD_PROPFIND(self, "name", name)
-            || !MGD_PROPFIND(self, "title", title)
-            || !MGD_PROPFIND(self, "mimetype", mimetype)) {
-         RETURN_FALSE_BECAUSE(MGD_ERR_INVALID_OBJECT);
-      }
-
-      if (!MGD_PROPFIND(self, "author", author)) { author = NULL; }
-      if (!MGD_PROPFIND(self, "score", score)) { score = NULL; }
-   }
+	if (calltype == MGD_BLOB_CALL_SELF) {
+		if (!MGD_PROPFIND(self, "name", name)
+				|| !MGD_PROPFIND(self, "title", title)
+				|| !MGD_PROPFIND(self, "mimetype", mimetype)) {
+			RETURN_FALSE_BECAUSE(MGD_ERR_INVALID_OBJECT);
+		}
+		if (!MGD_PROPFIND(self, "author", author)) { author = NULL; }
+		if (!MGD_PROPFIND(self, "score", score)) { score = NULL; }
+	}
 
 	convert_to_string_ex(&name);
 	convert_to_string_ex(&title);
@@ -889,13 +775,11 @@ MGD_FUNCTION(bool, update_attachment, (int id, string name, string title, string
 		       " AND me.ptable=other.ptable AND me.pid=other.pid"
 		       " AND other.name=$q",
 		       aid, Z_STRVAL_P(name))) {
-      mgd_release(res);
-      RETURN_FALSE_BECAUSE(MGD_ERR_DUPLICATE);
+		mgd_release(res);
+		RETURN_FALSE_BECAUSE(MGD_ERR_DUPLICATE);
 	}
 
-	res =
-	   mgd_sitegroup_record(mgd_handle(), "ptable,pid,location", "blobs",
-				aid);
+	res = mgd_sitegroup_record(mgd_handle(), "ptable,pid,location", "blobs", aid);
 
 	if (!res || !mgd_fetch(res)) {
 		if (res) { mgd_release(res); }
@@ -906,17 +790,15 @@ MGD_FUNCTION(bool, update_attachment, (int id, string name, string title, string
 	pid = mgd_sql2id(res, 1);
 
 
-    /* Switch to anonymous mode for MgdSchema objects */
-    MGD_PHP_PCLASS_NAME;
-    if (g_hash_table_lookup(mgd_handle()->schema->types, ce->name) == NULL) {
+	/* Switch to anonymous mode for MgdSchema objects */
+	MGD_PHP_PCLASS_NAME;
+	if (g_hash_table_lookup(mgd_handle()->schema->types, ce->name) == NULL) {
+		if (!isglobalowner(ptable, pid)) {
+			mgd_release(res);
+			RETURN_FALSE_BECAUSE(MGD_ERR_ACCESS_DENIED); 
+		} 
+	}
         
-        if (!isglobalowner(ptable, pid)) {
-            mgd_release(res);
-            RETURN_FALSE_BECAUSE(MGD_ERR_ACCESS_DENIED); 
-        } 
-    }
-            
-
 	if (score) {
 		convert_to_long_ex(&score);
 		sc = Z_LVAL_P(score);
