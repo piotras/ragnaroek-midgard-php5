@@ -36,9 +36,6 @@ MGD_FUNCTION(ret_type, serve_attachment, (type param));
 MGD_FUNCTION(ret_type, delete_attachment, (type param));
 MGD_FUNCTION(ret_type, update_attachment, (type param));
 
-MGD_FUNCTION(ret_type, oop_guid_get, (type param));
-MGD_FUNCTION(ret_type, oop_parent_get, (type param));
-
 MGD_FUNCTION(ret_type, create_sitegroup, (type param));
 MGD_FUNCTION(ret_type, delete_sitegroup, (type param));
 MGD_FUNCTION(ret_type, update_sitegroup, (type param));

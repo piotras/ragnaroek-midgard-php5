@@ -285,18 +285,14 @@ PHP_FUNCTION(_midgard_php_object_is_in_parent_tree)
 	CHECK_MGD;
 	NOT_STATIC_METHOD();
 	zval *zval_object = getThis();
-	zval **rootid, **id;
-	
-	/* FIXME, change for zend_parse_parameters */
-	if (ZEND_NUM_ARGS() != 2
-			|| zend_parse_parameters(2 TSRMLS_CC, "zz", &rootid, &id) != SUCCESS)
-		WRONG_PARAM_COUNT;
-	
-	convert_to_long_ex(rootid);
-	convert_to_long_ex(id);
+	long rootid, id;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ll", &rootid, &id) == FAILURE) {
+		return;
+	}
 	
 	/* Return TRUE if id or rootid is 0. */
-	if (((*rootid)->value.lval == 0) && (*id)->value.lval == 0)
+	if ((rootid == 0) && id == 0)
 		RETURN_TRUE;
 	
 	php_midgard_gobject *php_gobject =
@@ -304,11 +300,7 @@ PHP_FUNCTION(_midgard_php_object_is_in_parent_tree)
 	MgdObject *mobj = MIDGARD_OBJECT(php_gobject->gobject);
 	
 	if(mobj) {
-		
-		if (midgard_object_is_in_parent_tree(
-					mobj, 
-					(*rootid)->value.lval, 
-					(*id)->value.lval)){
+		if (midgard_object_is_in_parent_tree(mobj, rootid, id)){
 			/* FIXME , throw exception */
 			RETURN_TRUE;
 		}
@@ -321,29 +313,19 @@ PHP_FUNCTION(_midgard_php_object_is_in_tree)
 	CHECK_MGD;
 	NOT_STATIC_METHOD();
 	zval *zval_object = getThis();
-	zval **rootid, **id;
+	long rootid, id; 	
         
-	/* FIXME, parse_parameters */
-	if (ZEND_NUM_ARGS() != 2
-			|| zend_parse_parameters(2 TSRMLS_CC, "zz", &rootid, &id) != SUCCESS)
-		WRONG_PARAM_COUNT;
-	
-	convert_to_long_ex(rootid);
-	convert_to_long_ex(id);
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ll", &rootid, &id) == FAILURE) {
+		return;
+	}
 
 	php_midgard_gobject *php_gobject =
 		(php_midgard_gobject *)zend_object_store_get_object(zval_object TSRMLS_CC);
 	MgdObject *mobj = MIDGARD_OBJECT(php_gobject->gobject);
 
 	if(mobj) {
-
-		if (midgard_object_is_in_tree(
-					mobj, 
-					(*rootid)->value.lval, 
-					(*id)->value.lval))
-			/* FIXME , throw excpetion */
+		if (midgard_object_is_in_tree(mobj, rootid, id))
 			RETURN_TRUE; 
-
 	}
 }
 
