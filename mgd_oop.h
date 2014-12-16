@@ -24,13 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "php_midgard.h"
 #include <midgard/tablenames.h>
 
-MGD_FUNCTION(ret_type, oop_parameter, (type param));
-MGD_FUNCTION(ret_type, oop_parameter_list, (type param));
-MGD_FUNCTION(ret_type, oop_parameter_search, (type param));
-
 MGD_FUNCTION(ret_type, get_attachment, (type param));
-MGD_FUNCTION(ret_type, oop_attachment_create, (type param));
-MGD_FUNCTION(ret_type, oop_attachment_list, (type param));
 MGD_FUNCTION(ret_type, open_attachment, (type param));
 MGD_FUNCTION(ret_type, serve_attachment, (type param));
 MGD_FUNCTION(ret_type, delete_attachment, (type param));

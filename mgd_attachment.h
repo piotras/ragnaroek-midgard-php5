@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef MGD_ATTACHMENT_H
 #define MGD_ATTACHMENT_H
 
-extern MGD_FUNCTION(ret_type, oop_attachment_create, (type param));
-extern MGD_FUNCTION(ret_type, oop_attachment_list, (type param));
 extern MGD_FUNCTION(ret_type, open_attachment, (type param));
 extern MGD_FUNCTION(ret_type, get_attachment, (type param));
 extern MGD_FUNCTION(ret_type, serve_attachment, (type param));
