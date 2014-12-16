@@ -80,8 +80,6 @@ extern int le_midgard_list_fetch;
 #define PHP_UPDATE_REPLIGARD(table,id) \
    UPDATE_REPLIGARD(mgd_handle(), table, id)
 
-extern int midgard_user_call_func(midgard *mgd, int id, int level, void * xparam);
-
 /* Commonly used macros
 */
 

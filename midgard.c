@@ -991,27 +991,21 @@ PHP_FUNCTION(mgd_auth_midgard)
 
 MGD_FUNCTION(ret_type, connect, (type param))
 {
-zval *hostname, *database, *username, *password;
+	char *hostname, *database, *username, *password;
+	int hostname_length, database_length, username_length, password_length;
 
-  if (MGDG(mgd) != NULL) RETURN_TRUE;
+	if (MGDG(mgd) != NULL) RETURN_TRUE;
 
-    if (ZEND_NUM_ARGS() != 4) { WRONG_PARAM_COUNT; }
-
-   if (zend_parse_parameters(4 TSRMLS_CC, "zzzz", &hostname, &database,
-            &username, &password) == FAILURE) {
-      WRONG_PARAM_COUNT;
-   }
-    convert_to_string_ex(&hostname);
-    convert_to_string_ex(&database);
-    convert_to_string_ex(&username);
-    convert_to_string_ex(&password);
-
-   /*[eeh] this can safely be called multiple times. After the first
-    * it'll return without doing anything
-    */
-   mgd_init();
-
-   MGDG(mgd) = mgd_connect(Z_STRVAL_P(hostname), Z_STRVAL_P(database), Z_STRVAL_P(username), Z_STRVAL_P(password));
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ssss",
+				&hostname, &hostname_length, &database, &database_length,
+				&username, &username_length, &password, &password_length) == FAILURE) {
+		return;
+	}
+	
+	/*[eeh] this can safely be called multiple times. After the first
+	 * it'll return without doing anything */
+	mgd_init();
+	MGDG(mgd) = mgd_connect(hostname, database, username, password);
 }
 
 PHP_FUNCTION(mgd_unsetuid)
@@ -1069,67 +1063,21 @@ MGD_FUNCTION(ret_type, preparser_active, (type param))
    RETURN_LONG(mgd_rcfg()->preparser_active);
 }
 
-int midgard_user_call_func(midgard *mgd, int id, int level, void *xparam)
-{
-    zval *args[3];
-    zval ** xp = (zval **)xparam;
-    zval *return_value;
-    int retval;
-  TSRMLS_FETCH();
-
-    if(!PZVAL_IS_REF(xp[0])) {
-        /* DG: Do we force the user to pass it by reference ? */
-        php_error(E_WARNING,"You must pass the fourth parameter by reference.");
-        return 0;
-    }
-
-    MAKE_STD_ZVAL(return_value);    ZVAL_NULL(return_value);
-    MAKE_STD_ZVAL(args[0]);        ZVAL_LONG(args[0], id);
-    MAKE_STD_ZVAL(args[1]);        ZVAL_LONG(args[1], level);
-    args[2] = xp[0];        // DG: is this needed ? ->zval_copy_ctor(args[2]);
-
-    if(call_user_function(CG(function_table), NULL,
-                  xp[1], return_value, 3,
-                  args TSRMLS_CC) != SUCCESS) {
-        php_error(E_WARNING,"Unable to call %s() - function does not exist",
-                  (xp[1])->value.str.val);
-        zval_dtor(return_value);
-        zval_dtor(args[0]); zval_dtor(args[1]);
-        return 0;
-    }
-    if(return_value->type == IS_NULL)
-        retval = 1;
-    else {
-        convert_to_long_ex(&return_value);
-        retval = return_value->value.lval;
-    }
-    zval_dtor(return_value);
-    zval_dtor(args[0]); zval_dtor(args[1]);
-    return retval;
-}
-
 #if HAVE_MIDGARD_MULTILANG
 
 PHP_FUNCTION(mgd_set_lang)
 {
-    zval *lang;
-    zval **hash, **vkey; /* Used in _MIDGARD_UPDATE_LONG */
+	long lang;
+	zval **hash, **vkey; /* Used in _MIDGARD_UPDATE_LONG */
 
-    switch (ZEND_NUM_ARGS()) {
-    case 1:
-        if (zend_parse_parameters(1 TSRMLS_CC, "z", &lang) != SUCCESS) {
-            WRONG_PARAM_COUNT;
-        }
-        break;
-    default:
-        WRONG_PARAM_COUNT;
-    }
-    convert_to_long_ex(&lang);
-    mgd_internal_set_lang(mgd_handle(), Z_LVAL_P(lang));
-    
-    _MIDGARD_UPDATE_LONG("lang", Z_LVAL_P(lang));
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &lang) != SUCCESS) {
+		return;
+	}
 
-    RETURN_TRUE;
+	mgd_internal_set_lang(mgd_handle(), lang);
+        _MIDGARD_UPDATE_LONG("lang", lang);
+	
+	RETURN_TRUE;
 }
 
 PHP_FUNCTION(mgd_set_default_lang)
@@ -1161,66 +1109,48 @@ PHP_FUNCTION(mgd_get_default_lang)
 
 MGD_FUNCTION(ret_type, set_lang_by_code, (type param))
 {
-    zval *lang;
-    midgard_res *res;
-    int id;
+	char *code;
+	midgard_res *res;
+	int id, code_length;
 
-    switch (ZEND_NUM_ARGS()) {
-    case 1:
-        if (zend_parse_parameters(1 TSRMLS_CC, "z", &lang) != SUCCESS) {
-            WRONG_PARAM_COUNT;
-        }
-        break;
-    default:
-        WRONG_PARAM_COUNT;
-    }
-    convert_to_string_ex(&lang);
-    res = mgd_ungrouped_select(mgd_handle(), "id", "language", "code=$q", NULL, Z_STRVAL_P(lang));
+        if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &code, &code_length) != SUCCESS) {
+		return;
+	}
 
-    if (res && mgd_fetch(res)) {
-      id = atol(mgd_colvalue(res, 0));
-      mgd_release(res);
-    } else {
-      RETURN_FALSE_BECAUSE(MGD_ERR_NOT_EXISTS);
-    }
-    mgd_internal_set_lang(mgd_handle(), id);
-    RETURN_TRUE;
+	res = mgd_ungrouped_select(mgd_handle(), "id", "language", "code=$q", NULL, code);
+
+	if (res && mgd_fetch(res)) {
+		id = atol(mgd_colvalue(res, 0));
+		mgd_release(res);
+	} else {
+		RETURN_FALSE_BECAUSE(MGD_ERR_NOT_EXISTS);
+	}
+	mgd_internal_set_lang(mgd_handle(), id);
+	RETURN_TRUE;
 }
 
 MGD_FUNCTION(ret_type, set_parameters_defaultlang, (type param))
 {
-    zval *lang;
+    	long lang;
 
-    switch (ZEND_NUM_ARGS()) {
-    case 1:
-        if (zend_parse_parameters(1 TSRMLS_CC, "z", &lang) != SUCCESS) {
-            WRONG_PARAM_COUNT;
-        }
-        break;
-    default:
-        WRONG_PARAM_COUNT;
-    }
-    convert_to_long_ex(&lang);
-    mgd_internal_set_parameters_defaultlang(mgd_handle(), Z_LVAL_P(lang));
-    RETURN_TRUE;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &lang) != SUCCESS) {
+		return;
+	}
+    
+	mgd_internal_set_parameters_defaultlang(mgd_handle(), lang);
+	RETURN_TRUE;
 }
 
 MGD_FUNCTION(ret_type, set_attachments_defaultlang, (type param))
 {
-    zval *lang;
-
-    switch (ZEND_NUM_ARGS()) {
-    case 1:
-        if (zend_parse_parameters(1 TSRMLS_CC, "z", &lang) != SUCCESS) {
-            WRONG_PARAM_COUNT;
-        }
-        break;
-    default:
-        WRONG_PARAM_COUNT;
-    }
-    convert_to_long_ex(&lang);
-    mgd_internal_set_attachments_defaultlang(mgd_handle(), Z_LVAL_P(lang));
-    RETURN_TRUE;
+	long lang;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &lang) != SUCCESS) {
+		return;
+	}
+	
+	mgd_internal_set_attachments_defaultlang(mgd_handle(), lang);
+	RETURN_TRUE;
 }
 
 PHP_FUNCTION(mgd_get_lang)
@@ -1360,30 +1290,16 @@ void _make_midgard_global()
 
 MGD_FUNCTION(ret_type, set_style, (type param))
 {
-  zval *style;
-  midgard_request_config *rcfg = mgd_rcfg(); 
-    
-  CHECK_MGD;
-  
-  switch (ZEND_NUM_ARGS()) {
-    case 0:
-      WRONG_PARAM_COUNT;
-      break;
+	long style;
+	midgard_request_config *rcfg = mgd_rcfg(); 
+	
+	CHECK_MGD;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &style) != SUCCESS) {
+		return;
+	}
 
-    case 1:
-      if (zend_parse_parameters(1 TSRMLS_CC, "z", &style) != SUCCESS) { WRONG_PARAM_COUNT; }
-      convert_to_long_ex(&style);
-            
-      midgard_style_get_elements(MGDG(mgd), Z_LVAL_P(style), 
-      midgard_pc_set_element, rcfg->elements);
-     
-      break;
-    
-    default:
-      WRONG_PARAM_COUNT;
-      break;
-  }
-      
+	midgard_style_get_elements(MGDG(mgd), style, midgard_pc_set_element, rcfg->elements);      
 }
 
 MGD_FUNCTION(ret_type, set_styledir, (type param))
