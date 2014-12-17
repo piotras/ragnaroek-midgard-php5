@@ -1,0 +1,22 @@
+Source: php5-midgard
+Section: web
+Priority: optional
+Maintainer:  Piotr Pokora <pp@infoglob.pl>
+Uploaders: 
+Standards-Version: 3.2.1
+Build-Depends: debhelper (>=3), php5-dev, libmidgard8.9-dev(>=8.9.9)
+ 
+Package: php5-midgard
+Section: web
+Architecture: NOTSET
+Depends: libapache2-mod-php5 (>=5.2.0), php5-cli (>=5.2.0), libapache2-mod-midgard (>=8.9.9), midgard-common (>=8.9.9), ${shlibs:Depends}
+Suggests: midgard-doc
+Replaces: libapache2-mod-php4-midgard
+Conflicts: 
+Recommends: 
+Description: Midgard Content Management System - PHP5 Module
+ This package provides Midgard's PHP5 Module. It provides PHP5 languages bindings 
+ for Midgard framework. Apart from being PHP5 extension it also gives abilities
+ to use D-BUS and GObject event handling in normal PHP applications.
+ .
+ This package is required for Midgard CMS and MidCOM - Midgard Component Framework 
