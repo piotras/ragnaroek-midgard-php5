@@ -4,12 +4,12 @@ Priority: optional
 Maintainer:  Piotr Pokora <pp@infoglob.pl>
 Uploaders: 
 Standards-Version: 3.2.1
-Build-Depends: debhelper (>=3), php5-dev, libmidgard8.9-dev(>=8.9.9)
+Build-Depends: debhelper (>=3), php5-dev, libmidgard8.9-dev(>=8.10.0)
  
 Package: php5-midgard
 Section: web
 Architecture: NOTSET
-Depends: libapache2-mod-php5 (>=5.2.0), php5-cli (>=5.2.0), libapache2-mod-midgard (>=8.9.9), midgard-common (>=8.9.9), ${shlibs:Depends}
+Depends: libapache2-mod-php5 (>=5.2.0), php5-cli (>=5.2.0), libapache2-mod-midgard (>=8.10.0), midgard-common (>=8.10.0), ${shlibs:Depends}
 Suggests: midgard-doc
 Replaces: libapache2-mod-php4-midgard
 Conflicts: 
